@@ -1,0 +1,1420 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>OtoPark Sistemi — Proje Yönetim Paneli</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root{
+      --bg:#0b0f1a;--bg2:#111827;--card:#161d2e;--sidebar:#0d1220;
+      --blue:#3b82f6;--purple:#8b5cf6;--cyan:#06b6d4;--green:#10b981;
+      --orange:#f59e0b;--red:#ef4444;--pink:#ec4899;
+      --t1:#f0f4ff;--t2:#8b95b0;--t3:#4b5568;
+      --bdr:rgba(59,130,246,.15);--bdr2:rgba(59,130,246,.35);
+      --r:16px;--rs:10px;--sw:260px;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--t1);display:flex;min-height:100vh;overflow-x:hidden}
+
+    /* ─ SIDEBAR ─ */
+    .sidebar{width:var(--sw);background:var(--sidebar);border-right:1px solid var(--bdr);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:100}
+    .sidebar-logo{padding:24px 20px 20px;border-bottom:1px solid var(--bdr)}
+    .logo-badge{display:flex;align-items:center;gap:12px}
+    .logo-icon{width:44px;height:44px;background:linear-gradient(135deg,var(--green),var(--cyan));border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;box-shadow:0 0 20px rgba(16,185,129,.25)}
+    .logo-text strong{font-size:14px;font-weight:700;display:block}
+    .logo-text span{font-size:11px;color:var(--t2)}
+    .sidebar-nav{padding:16px 12px;flex:1;overflow-y:auto}
+    .nav-sec{font-size:10px;font-weight:600;letter-spacing:1.2px;color:var(--t3);text-transform:uppercase;padding:8px 8px 6px}
+    .nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--rs);cursor:pointer;transition:all .2s;font-size:13.5px;font-weight:500;color:var(--t2);margin-bottom:2px;user-select:none}
+    .nav-item:hover{background:rgba(16,185,129,.1);color:var(--t1)}
+    .nav-item.active{background:linear-gradient(90deg,rgba(16,185,129,.18),rgba(6,182,212,.08));color:var(--green);border-left:3px solid var(--green)}
+    .nav-item .icon{font-size:16px;min-width:20px;text-align:center}
+    .nav-badge{margin-left:auto;background:var(--red);color:#fff;font-size:10px;padding:2px 7px;border-radius:20px;font-weight:600}
+    
+    .tm-box{margin:12px 20px;background:var(--card);border:1px solid var(--orange);border-radius:var(--rs);padding:14px;box-shadow:0 0 15px rgba(245,158,11,.1)}
+    .tm-title{font-size:11px;font-weight:700;color:var(--orange);text-transform:uppercase;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+    .tm-input{width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:#fff;padding:8px 10px;border-radius:6px;font-family:inherit;font-size:12px;outline:none}
+    .tm-input:focus{border-color:var(--orange)}
+
+    /* ─ MAIN ─ */
+    .main{margin-left:var(--sw);flex:1;display:flex;flex-direction:column;min-height:100vh}
+    .topbar{height:68px;background:rgba(13,18,32,.85);backdrop-filter:blur(12px);border-bottom:1px solid var(--bdr);display:flex;align-items:center;justify-content:space-between;padding:0 32px;position:sticky;top:0;z-index:90}
+    .topbar-left{display:flex;flex-direction:column}
+    .topbar-title{font-size:17px;font-weight:700}
+    .topbar-sub{font-size:12px;color:var(--t2);margin-top:2px}
+    .topbar-right{display:flex;align-items:center;gap:12px}
+    .btn{display:inline-flex;align-items:center;gap:7px;padding:9px 18px;border-radius:var(--rs);font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all .2s;font-family:inherit}
+    .btn-primary{background:linear-gradient(135deg,var(--green),var(--cyan));color:#fff;box-shadow:0 0 20px rgba(16,185,129,.25)}
+    .btn-primary:hover{opacity:.88;transform:translateY(-1px)}
+    .btn-ghost{background:rgba(255,255,255,.05);border:1px solid var(--bdr);color:var(--t2)}
+    .btn-ghost:hover{background:rgba(255,255,255,.08);color:var(--t1)}
+    .avatar{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700}
+    .content{flex:1;padding:32px;display:none}
+    .content.active{display:block}
+
+    /* ─ CARDS ─ */
+    .sec-title{font-size:22px;font-weight:800;margin-bottom:6px}
+    .sec-sub{color:var(--t2);font-size:13px;margin-bottom:28px}
+    .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin-bottom:28px}
+    .stat-card{background:var(--card);border:1px solid var(--bdr);border-radius:var(--r);padding:22px;position:relative;overflow:hidden;transition:all .3s}
+    .stat-card:hover{border-color:var(--bdr2);transform:translateY(-2px)}
+    .stat-card::before{content:'';position:absolute;top:0;right:0;width:100px;height:100px;border-radius:50%;opacity:.07;transform:translate(30%,-30%)}
+    .stat-card.blue::before{background:var(--blue)}.stat-card.purple::before{background:var(--purple)}.stat-card.green::before{background:var(--green)}.stat-card.orange::before{background:var(--orange)}
+    .stat-icon{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;margin-bottom:16px}
+    .stat-card.blue .stat-icon{background:rgba(59,130,246,.15)}.stat-card.purple .stat-icon{background:rgba(139,92,246,.15)}.stat-card.green .stat-icon{background:rgba(16,185,129,.15)}.stat-card.orange .stat-icon{background:rgba(245,158,11,.15)}
+    .stat-val{font-size:28px;font-weight:800;line-height:1}
+    .stat-lbl{font-size:12px;color:var(--t2);margin-top:6px;font-weight:500}
+    .stat-chg{font-size:11px;margin-top:8px;font-weight:600;color:var(--green)}
+    .two-col{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:28px}
+    .card{background:var(--card);border:1px solid var(--bdr);border-radius:var(--r);padding:24px;transition:border-color .3s}
+    .card:hover{border-color:var(--bdr2)}
+    .card-title{font-size:15px;font-weight:700;margin-bottom:4px;display:flex;align-items:center;gap:10px}
+    .card-sub{font-size:12px;color:var(--t2);margin-bottom:20px}
+    .prog-wrap{margin-bottom:12px}
+    .prog-lbl{display:flex;justify-content:space-between;font-size:12px;color:var(--t2);margin-bottom:6px}
+    .prog-bar{height:8px;background:rgba(255,255,255,.06);border-radius:20px;overflow:hidden}
+    .prog-fill{height:100%;border-radius:20px;transition:width 1s ease}
+    .fill-green{background:linear-gradient(90deg,var(--green),#34d399)}
+    .fill-blue{background:linear-gradient(90deg,var(--blue),var(--cyan))}
+    .fill-purple{background:linear-gradient(90deg,var(--purple),#a78bfa)}
+    .fill-orange{background:linear-gradient(90deg,var(--orange),#fbbf24)}
+
+    /* ─ SPRINT ─ */
+    .sprints-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-bottom:28px}
+    .sprint-card{background:var(--card);border:1px solid var(--bdr);border-radius:var(--r);padding:20px;transition:all .3s}
+    .sprint-card:hover{border-color:rgba(59,130,246,.35);transform:translateY(-2px)}
+    .sprint-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+    .sprint-num{font-size:11px;color:var(--t3);font-weight:600;letter-spacing:1px;text-transform:uppercase}
+    .s-badge{font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;text-transform:uppercase;letter-spacing:.5px}
+    .b-done{background:rgba(16,185,129,.15);color:var(--green);border:1px solid rgba(16,185,129,.3)}
+    .b-active{background:rgba(59,130,246,.15);color:var(--blue);border:1px solid rgba(59,130,246,.3)}
+    .b-pending{background:rgba(255,255,255,.05);color:var(--t2);border:1px solid var(--bdr)}
+    .sprint-title{font-size:14px;font-weight:700;margin-bottom:6px}
+    .sprint-dates{font-size:11px;color:var(--t2);margin-bottom:14px}
+    .task-list{display:flex;flex-direction:column;gap:6px}
+    .ti{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--t2);padding:5px 0;border-bottom:1px solid rgba(255,255,255,.04)}
+    .ti:last-child{border-bottom:none}
+    .ti-check{width:16px;height:16px;border-radius:4px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:9px;background:var(--green);color:#fff}
+    .ti-check.pend{background:rgba(255,255,255,.1);color:transparent}
+    .ti-check.prog{background:var(--blue);color:#fff}
+    .ti-ass{margin-left:auto}
+    .ma{width:20px;height:20px;border-radius:50%;font-size:9px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;color:#fff}
+
+    /* ─ GANTT ─ */
+    .gantt-wrap{overflow-x:auto}
+    .gantt-tbl{width:100%;min-width:900px;border-collapse:collapse;position:relative}
+    .g-th{font-size:11px;font-weight:600;color:var(--t3);padding:8px 12px;text-align:left;border-bottom:1px solid var(--bdr);white-space:nowrap}
+    .g-td{padding:10px 12px;font-size:12.5px;border-bottom:1px solid rgba(255,255,255,.04);vertical-align:middle}
+    .g-bar-cell{padding:10px 8px;min-width:420px;position:relative}
+    .g-bar-wrap{position:relative;height:28px}
+    .g-bar{position:absolute;height:100%;border-radius:6px;display:flex;align-items:center;padding:0 8px;font-size:10px;font-weight:600;white-space:nowrap;overflow:hidden;transition:all .2s;color:#fff}
+    .vline{position:absolute;top:0;bottom:0;width:2px;background:var(--orange);z-index:10;pointer-events:none;box-shadow:0 0 10px rgba(245,158,11,.5)}
+    .vline::before{content:'SEÇİLEN TARİH';position:absolute;top:-15px;left:-40px;font-size:9px;background:var(--orange);color:#fff;padding:2px 6px;border-radius:4px;font-weight:700}
+
+    /* ─ TEAM ─ */
+    .team-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+    .team-card{background:var(--card);border:1px solid var(--bdr);border-radius:var(--r);padding:24px;text-align:center;transition:all .3s}
+    .team-card:hover{border-color:var(--bdr2);transform:translateY(-2px)}
+    .team-av{width:64px;height:64px;border-radius:50%;margin:0 auto 12px;font-size:24px;font-weight:800;display:flex;align-items:center;justify-content:center;border:3px solid transparent}
+    .team-name{font-size:15px;font-weight:700;margin-bottom:4px}
+    .team-role{font-size:12px;color:var(--t2);margin-bottom:16px}
+    .team-sal{background:rgba(255,255,255,.04);border-radius:var(--rs);padding:10px;font-size:12px}
+    .team-sal strong{font-size:15px;font-weight:700;display:block;margin-bottom:2px}
+
+    /* ─ BUDGET ─ */
+    .bud-total{background:linear-gradient(135deg,rgba(59,130,246,.1),rgba(6,182,212,.1));border:1px solid rgba(59,130,246,.25);border-radius:var(--r);padding:28px;margin-bottom:24px;text-align:center}
+    .bud-amount{font-size:42px;font-weight:800;background:linear-gradient(135deg,var(--blue),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .bud-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px}
+    .bud-item{background:var(--card);border:1px solid var(--bdr);border-radius:var(--rs);padding:16px}
+    .bud-lbl{font-size:11px;color:var(--t2);margin-bottom:6px}
+    .bud-val{font-size:20px;font-weight:700}
+
+    /* ─ REPORTS ─ */
+    .rep-list{display:flex;flex-direction:column;gap:16px}
+    .rep-card{background:var(--card);border:1px solid var(--bdr);border-radius:var(--r);padding:20px;transition:border-color .3s}
+    .rep-card:hover{border-color:var(--bdr2)}
+    .rep-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+    .rep-week{font-weight:700;font-size:14px}
+    .rep-date{font-size:11px;color:var(--t2)}
+    .rep-metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px}
+    .rep-metric{text-align:center}
+    .rep-metric strong{display:block;font-size:18px;font-weight:700}
+    .rep-metric span{font-size:11px;color:var(--t2)}
+    .rep-notes{font-size:12.5px;color:var(--t2);line-height:1.6;padding-top:12px;border-top:1px solid var(--bdr)}
+
+    /* Misc & Utility */
+    .launch-banner{background:linear-gradient(135deg,rgba(59,130,246,.12),rgba(6,182,212,.08));border:1px solid rgba(59,130,246,.3);border-radius:var(--r);padding:20px 28px;display:flex;align-items:center;justify-content:space-between;margin-bottom:28px}
+    .lb-left{display:flex;align-items:center;gap:16px}
+    .lb-icon{font-size:36px}
+    .lb-title{font-size:18px;font-weight:800;color:var(--blue)}
+    .lb-sub{font-size:12px;color:var(--t2);margin-top:3px}
+    .pill{display:inline-flex;align-items:center;gap:5px;font-size:11px;padding:4px 10px;border-radius:20px;font-weight:600}
+    .pill-green{background:rgba(16,185,129,.12);color:var(--green);border:1px solid rgba(16,185,129,.25)}
+    .pill-blue{background:rgba(59,130,246,.12);color:var(--blue);border:1px solid rgba(59,130,246,.25)}
+    .pill-orange{background:rgba(245,158,11,.12);color:var(--orange);border:1px solid rgba(245,158,11,.25)}
+    .fb{display:flex;align-items:center;justify-content:space-between}
+    .loading{display:flex;align-items:center;justify-content:center;padding:60px;flex-direction:column;gap:16px}
+    .spinner{width:40px;height:40px;border:3px solid rgba(59,130,246,.15);border-top-color:var(--blue);border-radius:50%;animation:spin .8s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
+
+    /* ─ GANTT FILTER & TOGGLE ─ */
+    .gantt-controls{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;margin-bottom:20px;background:var(--card);border:1px solid var(--bdr);border-radius:var(--rs);padding:14px}
+    .member-filters{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+    .filter-lbl{font-size:12px;color:var(--t2);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-right:4px}
+    .m-filter-btn{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:20px;font-size:12px;font-weight:600;color:var(--t2);background:rgba(255,255,255,.03);border:1px solid var(--bdr);cursor:pointer;transition:all .2s;user-select:none}
+    .m-filter-btn:hover{background:rgba(255,255,255,.08);color:var(--t1);border-color:var(--bdr2)}
+    .m-filter-btn.active{background:rgba(16,185,129,.12);color:var(--green);border-color:var(--green)}
+    .m-filter-btn .avatar-mini{width:18px;height:18px;border-radius:50%;font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;color:#fff}
+    
+    .g-toggle-wrap{display:flex;background:rgba(255,255,255,.03);border:1px solid var(--bdr);border-radius:var(--rs);padding:3px}
+    .g-toggle-btn{padding:6px 12px;font-size:12px;font-weight:600;color:var(--t2);background:transparent;border:none;cursor:pointer;border-radius:6px;transition:all .2s}
+    .g-toggle-btn.active{background:linear-gradient(135deg,var(--green),var(--cyan));color:#fff}
+
+    .tag{font-size:10px;font-weight:600;padding:2px 6px;border-radius:4px;white-space:nowrap}
+    .tag-blue{background:rgba(59,130,246,.15);color:var(--blue)}
+    .tag-purple{background:rgba(139,92,246,.15);color:var(--purple)}
+    .tag-green{background:rgba(16,185,129,.15);color:var(--green)}
+    .tag-orange{background:rgba(245,158,11,.15);color:var(--orange)}
+    .tag-cyan{background:rgba(6,182,212,.15);color:var(--cyan)}
+    .tag-pink{background:rgba(236,72,153,.15);color:var(--pink)}
+
+    /* ─ FINAL REPORT ─ */
+    .fr-hero{background:linear-gradient(135deg,rgba(16,185,129,.12) 0%,rgba(6,182,212,.10) 50%,rgba(139,92,246,.08) 100%);border:1px solid rgba(16,185,129,.3);border-radius:var(--r);padding:40px;margin-bottom:32px;text-align:center;position:relative;overflow:hidden}
+    .fr-hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 20% 50%,rgba(16,185,129,.08) 0%,transparent 60%),radial-gradient(ellipse at 80% 50%,rgba(6,182,212,.08) 0%,transparent 60%)}
+    .fr-hero-title{font-size:32px;font-weight:900;background:linear-gradient(135deg,var(--green),var(--cyan),var(--blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:8px;position:relative}
+    .fr-hero-sub{font-size:14px;color:var(--t2);margin-bottom:24px;position:relative}
+    .fr-hero-pills{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;position:relative}
+    .fr-section{background:var(--card);border:1px solid var(--bdr);border-radius:var(--r);padding:28px;margin-bottom:24px;transition:border-color .3s}
+    .fr-section:hover{border-color:var(--bdr2)}
+    .fr-section-title{font-size:17px;font-weight:800;margin-bottom:6px;display:flex;align-items:center;gap:10px}
+    .fr-section-sub{font-size:12px;color:var(--t2);margin-bottom:20px}
+    .fr-kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:20px}
+    .fr-kpi{background:rgba(255,255,255,.03);border:1px solid var(--bdr);border-radius:var(--rs);padding:18px;text-align:center}
+    .fr-kpi-val{font-size:26px;font-weight:800;line-height:1;margin-bottom:6px}
+    .fr-kpi-lbl{font-size:11px;color:var(--t2);font-weight:500}
+    .fr-timeline{display:flex;flex-direction:column;gap:0}
+    .fr-tl-item{display:flex;gap:16px;align-items:stretch}
+    .fr-tl-left{display:flex;flex-direction:column;align-items:center;width:36px;flex-shrink:0}
+    .fr-tl-dot{width:16px;height:16px;border-radius:50%;flex-shrink:0;border:3px solid;margin-top:4px}
+    .fr-tl-line{width:2px;flex:1;min-height:24px;margin:4px 0}
+    .fr-tl-content{padding-bottom:20px;flex:1}
+    .fr-tl-sprint{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+    .fr-tl-title{font-size:13.5px;font-weight:600;margin-bottom:3px}
+    .fr-tl-desc{font-size:12px;color:var(--t2);line-height:1.5}
+    .fr-tl-meta{font-size:11px;color:var(--t3);margin-top:4px}
+    .fr-team-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+    .fr-team-item{background:rgba(255,255,255,.03);border:1px solid var(--bdr);border-radius:var(--rs);padding:16px;display:flex;align-items:center;gap:12px}
+    .fr-team-av{width:40px;height:40px;border-radius:50%;font-size:14px;font-weight:800;display:flex;align-items:center;justify-content:center;color:#fff;flex-shrink:0}
+    .fr-team-name{font-size:13px;font-weight:700;margin-bottom:2px}
+    .fr-team-role{font-size:11px;color:var(--t2);margin-bottom:4px}
+    .fr-team-stat{font-size:11px;color:var(--green);font-weight:600}
+    .fr-risk-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    .fr-risk-item{background:rgba(255,255,255,.03);border-radius:var(--rs);padding:14px;border-left:3px solid}
+    .fr-risk-head{font-size:12px;font-weight:700;margin-bottom:4px}
+    .fr-risk-desc{font-size:11.5px;color:var(--t2);line-height:1.5}
+    .fr-lesson-list{display:flex;flex-direction:column;gap:10px}
+    .fr-lesson{display:flex;gap:12px;padding:14px;background:rgba(255,255,255,.02);border-radius:var(--rs);border:1px solid rgba(255,255,255,.05)}
+    .fr-lesson-icon{font-size:20px;flex-shrink:0;margin-top:2px}
+    .fr-lesson-head{font-size:13px;font-weight:700;margin-bottom:3px}
+    .fr-lesson-desc{font-size:12px;color:var(--t2);line-height:1.5}
+    .fr-sign{background:rgba(255,255,255,.02);border:1px dashed rgba(255,255,255,.1);border-radius:var(--rs);padding:20px;display:flex;align-items:center;gap:16px;margin-top:20px}
+    .fr-sign-av{width:52px;height:52px;border-radius:50%;font-size:18px;font-weight:800;display:flex;align-items:center;justify-content:center;color:#fff;flex-shrink:0;box-shadow:0 0 20px rgba(245,158,11,.25)}
+    .fr-sign-name{font-size:14px;font-weight:700}
+    .fr-sign-title{font-size:12px;color:var(--t2)}
+    .fr-sign-date{font-size:11px;color:var(--t3);margin-top:2px}
+    .fr-sign-stamp{margin-left:auto;text-align:center}
+    .fr-sign-stamp-box{font-size:10px;font-weight:700;padding:8px 14px;border-radius:6px;background:rgba(16,185,129,.1);color:var(--green);border:1px solid rgba(16,185,129,.3);letter-spacing:.5px}
+  </style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-badge">
+      <div class="logo-icon">🅿️</div>
+      <div class="logo-text">
+        <strong>OtoPark Sistemi</strong>
+        <span>Proje Yönetim Paneli</span>
+      </div>
+    </div>
+  </div>
+  
+  <div class="tm-box">
+    <div class="tm-title">⏳ Zaman Makinesi</div>
+    <input type="date" class="tm-input" id="time-machine" value="2026-06-18" min="2026-01-06" max="2026-06-30" onchange="visibleReportsLimit = 15; renderAll()" />
+    <div style="font-size:10px;color:var(--t2);margin-top:6px;line-height:1.4">Seçtiğiniz tarihe göre projenin durumu baştan hesaplanır.</div>
+  </div>
+
+  <nav class="sidebar-nav">
+    <div class="nav-sec">Ana Menü</div>
+    <div class="nav-item active" data-tab="dashboard" onclick="go('dashboard')"><span class="icon">📊</span>Genel Bakış</div>
+    <div class="nav-item" data-tab="sprints" onclick="go('sprints')"><span class="icon">🔄</span>Sprintler</div>
+    <div class="nav-item" data-tab="gantt" onclick="go('gantt')"><span class="icon">📅</span>Gantt Şeması</div>
+    <div class="nav-item" data-tab="team" onclick="go('team')"><span class="icon">👥</span>Ekip</div>
+    <div class="nav-sec">Finans &amp; Raporlar</div>
+    <div class="nav-item" data-tab="budget" onclick="go('budget')"><span class="icon">💰</span>Bütçe</div>
+    <div class="nav-item" data-tab="reports" onclick="go('reports')"><span class="icon">📋</span>Günlük Raporlar</div>
+    <div class="nav-item" data-tab="final-report" onclick="go('final-report')"><span class="icon">📊</span>Proje Durum Raporu</div>
+  </nav>
+</aside>
+
+<main class="main">
+  <header class="topbar">
+    <div class="topbar-left">
+      <div class="topbar-title" id="topbar-title">Genel Bakış</div>
+      <div class="topbar-sub" id="topbar-sub">Durum seçilen tarihe göre simüle ediliyor...</div>
+    </div>
+    <div class="topbar-right">
+      <div class="pill pill-orange" id="top-status">⏳ Proje Devam Ediyor</div>
+    </div>
+  </header>
+
+  <!-- DASHBOARD -->
+  <section class="content active" id="tab-dashboard">
+    <div class="launch-banner">
+      <div class="lb-left"><div class="lb-icon">⏳</div><div><div class="lb-title" id="db-main-title">Zaman Makinesi Aktif</div><div class="lb-sub" id="db-main-sub">Seçilen tarih: ...</div></div></div>
+      <span class="pill pill-blue" style="font-size:14px;padding:8px 18px" id="db-main-pct">%0 Tamamlandı</span>
+    </div>
+    
+    <div class="stats-grid">
+      <div class="stat-card green"><div class="stat-icon">✅</div><div class="stat-val" id="ds-pct">0%</div><div class="stat-lbl">Proje İlerlemesi</div><div class="stat-chg" id="ds-pct-lbl">Seçilen tarihe göre</div></div>
+      <div class="stat-card purple"><div class="stat-icon">📋</div><div class="stat-val" id="ds-gorev">0</div><div class="stat-lbl">Biten Görev / Toplam</div><div class="stat-chg" id="ds-gorev-sub">Yükleniyor...</div></div>
+      <div class="stat-card orange"><div class="stat-icon">💸</div><div class="stat-val" id="ds-butce">₺0</div><div class="stat-lbl">Toplam Harcanan Bütçe</div><div class="stat-chg" id="ds-tasarruf">Bütçe hesaplanıyor...</div></div>
+      <div class="stat-card blue"><div class="stat-icon">🏦</div><div class="stat-val" id="ds-kalan-butce">₺0</div><div class="stat-lbl">Kalan Bütçe (Tahmini)</div><div class="stat-chg" id="ds-kalan-butce-lbl">Toplam: ₺2.500.000 üzerinden</div></div>
+    </div>
+
+    <div class="card" style="margin-bottom:28px">
+      <div class="card-title">👥 Ekip Üyelerinin Durumu (Seçilen Tarihe Göre)</div>
+      <div class="card-sub">Kim ne kadar ilerledi, kaç görev tamamladı ve ne kadar ödeme aldı?</div>
+      <div style="overflow-x:auto;">
+        <table class="gantt-tbl" style="min-width:100%">
+          <thead>
+            <tr>
+              <th class="g-th">Ekip Üyesi</th>
+              <th class="g-th">Rol</th>
+              <th class="g-th" style="text-align:center">Tamamlanan Görev</th>
+              <th class="g-th" style="text-align:center">İlerleme</th>
+              <th class="g-th" style="text-align:right">O Güne Kadar Ödenen (Hak ediş)</th>
+            </tr>
+          </thead>
+          <tbody id="dash-team-prog">
+            <!-- Dinamik doldurulacak -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">🔄 Sprint Durumları</div>
+      <div class="card-sub">Seçilen tarihe göre (Zaman Makinesi)</div>
+      <div id="dash-sprint-prog"></div>
+    </div>
+  </section>
+
+  <!-- SPRINTLER -->
+  <section class="content" id="tab-sprints">
+    <div class="sec-title">🔄 Sprint Planlaması</div>
+    <div class="sec-sub">Tarihe göre simüle edilen sprint durumları</div>
+    <div class="sprints-grid" id="sprint-grid"><div class="loading"><div class="spinner"></div></div></div>
+  </section>
+
+  <!-- GANTT -->
+  <section class="content" id="tab-gantt">
+    <div class="sec-title">📅 Gantt Şeması & Zaman Makinesi</div>
+    <div class="sec-sub">Seçilen tarihe göre kesit</div>
+    
+    <div class="gantt-controls">
+      <div class="member-filters" id="gantt-member-filters">
+        <span class="filter-lbl">👤 Kişi Filtresi:</span>
+        <!-- Dinamik doldurulacak -->
+      </div>
+      <div class="g-toggle-wrap">
+        <button class="g-toggle-btn active" id="g-grp-sprint" onclick="setGanttGrouping('sprint')">🔄 Sprintlere Göre</button>
+        <button class="g-toggle-btn" id="g-grp-person" onclick="setGanttGrouping('person')">👥 Kişilere Göre</button>
+      </div>
+    </div>
+
+    <div class="card"><div class="gantt-wrap"><table class="gantt-tbl"><thead><tr>
+      <th class="g-th" style="width:220px">Görev</th>
+      <th class="g-th" style="width:120px">Sorumlu</th>
+      <th class="g-th" style="width:90px">Başlangıç</th>
+      <th class="g-th" style="width:90px">Bitiş</th>
+      <th class="g-th" style="width:50px">Durum</th>
+      <th class="g-th g-bar-cell">
+        <div style="display:flex;justify-content:space-between;font-size:10px;min-width:420px"><span>OCA</span><span>ŞUB</span><span>MAR</span><span>NİS</span><span>MAY</span><span>HAZ</span></div>
+        <div class="vline" id="gantt-vline" style="left:0%"></div>
+      </th>
+    </tr></thead><tbody id="gantt-body"></tbody></table></div></div>
+  </section>
+
+  <!-- TEAM -->
+  <section class="content" id="tab-team">
+    <div class="sec-title">👥 Proje Ekibi & Hakedişler</div>
+    <div class="sec-sub">Seçilen tarihe kadar ödenen tahmini hak edişler</div>
+    <div class="team-grid" id="team-grid"><div class="loading"><div class="spinner"></div></div></div>
+  </section>
+
+  <!-- BUDGET -->
+  <section class="content" id="tab-budget">
+    <div class="sec-title">💰 Dinamik Bütçe Yönetimi</div>
+    <div class="sec-sub">Seçilen tarihe kadarki kümülatif maliyet tablosu</div>
+    <div class="bud-total">
+      <div style="font-size:13px;color:var(--t2);margin-bottom:8px;text-transform:uppercase;letter-spacing:1px;font-weight:600">O Güne Kadar Harcanan Toplam</div>
+      <div class="bud-amount" id="bud-total-val">₺0</div>
+      <div style="color:var(--t2);font-size:13px;margin-top:4px" id="bud-sub">Hesaplanıyor...</div>
+    </div>
+    <div class="bud-grid" id="bud-grid"></div>
+  </section>
+
+  <!-- REPORTS -->
+  <section class="content" id="tab-reports">
+    <div class="sec-title">📋 Günlük Raporlar</div>
+    <div class="sec-sub">Zaman makinesi tarihine kadar olan günlük raporlar gösterilir. Gelecekteki raporlar gizlenir.</div>
+    <div class="rep-list" id="rep-list"><div class="loading"><div class="spinner"></div></div></div>
+  </section>
+
+  <!-- FINAL REPORT -->
+  <section class="content" id="tab-final-report">
+    <div class="sec-title">📊 Proje Durum Raporu</div>
+    <div class="sec-sub">OtoPark Sistemi — Devam Eden Proje Sürecinin Güncel Durum Belgesi</div>
+    <div id="final-report-content"><div class="loading"><div class="spinner"></div><p style="margin-top:12px;color:var(--t2)">Proje sonu raporu hazırlanıyor...</p></div></div>
+  </section>
+</main>
+
+<script>
+const API = '';
+
+// ── GLOBAL STATE (HARDCODED) ──
+let dbData = { 
+  sprints: [
+  { "sprintNo":1, "baslik":"Analiz, Planlama & UI/UX Tasarımı", "baslangicTarihi":"2026-01-06T00:00:00", "bitisTarihi":"2026-01-31T00:00:00", "durum":"done",
+    "gorevler": [
+      { "gorevAdi":"İhtiyaç analizi ve paydaş görüşmeleri", "sorumlu":"Can Öztürk", "sorumluKisaltma":"CÖ", "sorumluRenk":"#3b82f6", "durum":"done", "baslangicTarihi":"2026-01-06T00:00:00", "bitisTarihi":"2026-01-10T00:00:00" },
+      { "gorevAdi":"Sistem mimarisi dokümantasyonu", "sorumlu":"Can Öztürk", "sorumluKisaltma":"CÖ", "sorumluRenk":"#3b82f6", "durum":"done", "baslangicTarihi":"2026-01-11T00:00:00", "bitisTarihi":"2026-01-14T00:00:00" },
+      { "gorevAdi":"Veritabanı şema tasarımı", "sorumlu":"Ahmet Yılmaz", "sorumluKisaltma":"AY", "sorumluRenk":"#8b5cf6", "durum":"done", "baslangicTarihi":"2026-01-13T00:00:00", "bitisTarihi":"2026-01-18T00:00:00" },
+      { "gorevAdi":"Wireframe ve prototip hazırlama", "sorumlu":"Elif Şahin", "sorumluKisaltma":"EŞ", "sorumluRenk":"#ec4899", "durum":"done", "baslangicTarihi":"2026-01-15T00:00:00", "bitisTarihi":"2026-01-22T00:00:00" },
+      { "gorevAdi":"UI/UX tasarım sistemi oluşturma", "sorumlu":"Elif Şahin", "sorumluKisaltma":"EŞ", "sorumluRenk":"#ec4899", "durum":"done", "baslangicTarihi":"2026-01-23T00:00:00", "bitisTarihi":"2026-01-28T00:00:00" },
+      { "gorevAdi":"Sprint planlaması ve görev dağılımı", "sorumlu":"Nisa Çelik", "sorumluKisaltma":"NÇ", "sorumluRenk":"#f59e0b", "durum":"done", "baslangicTarihi":"2026-01-28T00:00:00", "bitisTarihi":"2026-01-29T00:00:00" },
+      { "gorevAdi":"Teknoloji stack seçimi", "sorumlu":"Can Öztürk", "sorumluKisaltma":"CÖ", "sorumluRenk":"#3b82f6", "durum":"done", "baslangicTarihi":"2026-01-20T00:00:00", "bitisTarihi":"2026-01-24T00:00:00" },
+      { "gorevAdi":"CI/CD pipeline tasarımı", "sorumlu":"Mert Kaya", "sorumluKisaltma":"MK", "sorumluRenk":"#10b981", "durum":"done", "baslangicTarihi":"2026-01-25T00:00:00", "bitisTarihi":"2026-01-31T00:00:00" }
+    ]
+  },
+  { "sprintNo":2, "baslik":"Veritabanı & Backend Altyapı", "baslangicTarihi":"2026-02-03T00:00:00", "bitisTarihi":"2026-02-28T00:00:00", "durum":"done",
+    "gorevler": [
+      { "gorevAdi":"PostgreSQL veritabanı kurulumu", "sorumlu":"Ahmet Yılmaz", "sorumluKisaltma":"AY", "sorumluRenk":"#8b5cf6", "durum":"done", "baslangicTarihi":"2026-02-03T00:00:00", "bitisTarihi":"2026-02-05T00:00:00" },
+      { "gorevAdi":"ORM (Prisma) entegrasyonu", "sorumlu":"Ahmet Yılmaz", "sorumluKisaltma":"AY", "sorumluRenk":"#8b5cf6", "durum":"done", "baslangicTarihi":"2026-02-06T00:00:00", "bitisTarihi":"2026-02-10T00:00:00" },
+      { "gorevAdi":"JWT kimlik doğrulama sistemi", "sorumlu":"Can Öztürk", "sorumluKisaltma":"CÖ", "sorumluRenk":"#3b82f6", "durum":"done", "baslangicTarihi":"2026-02-05T00:00:00", "bitisTarihi":"2026-02-12T00:00:00" },
+      { "gorevAdi":"RESTful API temel yapısı", "sorumlu":"Can Öztürk", "sorumluKisaltma":"CÖ", "sorumluRenk":"#3b82f6", "durum":"done", "baslangicTarihi":"2026-02-10T00:00:00", "bitisTarihi":"2026-02-18T00:00:00" },
+      { "gorevAdi":"Kullanıcı yönetim modülü", "sorumlu":"Selin Erdoğan", "sorumluKisaltma":"SE", "sorumluRenk":"#06b6d4", "durum":"done", "baslangicTarihi":"2026-02-15T00:00:00", "bitisTarihi":"2026-02-22T00:00:00" },
+      { "gorevAdi":"Rol tabanlı yetkilendirme (RBAC)", "sorumlu":"Mert Kaya", "sorumluKisaltma":"MK", "sorumluRenk":"#10b981", "durum":"done", "baslangicTarihi":"2026-02-20T00:00:00", "bitisTarihi":"2026-02-25T00:00:00" },
+      { "gorevAdi":"Docker & konteyner ortamı", "sorumlu":"Mert Kaya", "sorumluKisaltma":"MK", "sorumluRenk":"#10b981", "durum":"done", "baslangicTarihi":"2026-02-15T00:00:00", "bitisTarihi":"2026-02-22T00:00:00" },
+      { "gorevAdi":"Redis önbellek katmanı", "sorumlu":"Ahmet Yılmaz", "sorumluKisaltma":"AY", "sorumluRenk":"#8b5cf6", "durum":"done", "baslangicTarihi":"2026-02-22T00:00:00", "bitisTarihi":"2026-02-26T00:00:00" },
+      { "gorevAdi":"Unit test altyapısı (Jest)", "sorumlu":"Berk Toprak", "sorumluKisaltma":"BT", "sorumluRenk":"#f59e0b", "durum":"done", "baslangicTarihi":"2026-02-25T00:00:00", "bitisTarihi":"2026-02-28T00:00:00" }
+    ]
+  },
+  { "sprintNo":3, "baslik":"Otopark Çekirdek Modülleri", "baslangicTarihi":"2026-03-03T00:00:00", "bitisTarihi":"2026-03-31T00:00:00", "durum":"done",
+    "gorevler": [
+      { "gorevAdi":"Park alanı yönetim modülü", "sorumlu":"Selin Erdoğan", "sorumluKisaltma":"SE", "sorumluRenk":"#06b6d4", "durum":"done", "baslangicTarihi":"2026-03-03T00:00:00", "bitisTarihi":"2026-03-10T00:00:00" },
+      { "gorevAdi":"Araç giriş/çıkış sistemi (plaka tanıma)", "sorumlu":"Selin Erdoğan", "sorumluKisaltma":"SE", "sorumluRenk":"#06b6d4", "durum":"done", "baslangicTarihi":"2026-03-08T00:00:00", "bitisTarihi":"2026-03-16T00:00:00" },
+      { "gorevAdi":"Gerçek zamanlı doluluk takibi (WS)", "sorumlu":"Ahmet Yılmaz", "sorumluKisaltma":"AY", "sorumluRenk":"#8b5cf6", "durum":"done", "baslangicTarihi":"2026-03-14T00:00:00", "bitisTarihi":"2026-03-22T00:00:00" },
+      { "gorevAdi":"Rezervasyon sistemi çekirdek", "sorumlu":"Selin Erdoğan", "sorumluKisaltma":"SE", "sorumluRenk":"#06b6d4", "durum":"done", "baslangicTarihi":"2026-03-20T00:00:00", "bitisTarihi":"2026-03-28T00:00:00" },
+      { "gorevAdi":"Admin dashboard (React)", "sorumlu":"Yusuf Arslan", "sorumluKisaltma":"YA", "sorumluRenk":"#f59e0b", "durum":"done", "baslangicTarihi":"2026-03-05T00:00:00", "bitisTarihi":"2026-03-20T00:00:00" },
+      { "gorevAdi":"Otopark harita görünümü", "sorumlu":"Elif Şahin", "sorumluKisaltma":"EŞ", "sorumluRenk":"#ec4899", "durum":"done", "baslangicTarihi":"2026-03-18T00:00:00", "bitisTarihi":"2026-03-28T00:00:00" },
+      { "gorevAdi":"Raporlama & analitik modülü", "sorumlu":"Yusuf Arslan", "sorumluKisaltma":"YA", "sorumluRenk":"#f59e0b", "durum":"done", "baslangicTarihi":"2026-03-25T00:00:00", "bitisTarihi":"2026-03-31T00:00:00" }
+    ]
+  },
+  { "sprintNo":4, "baslik":"Ödeme, Abonelik & Entegrasyonlar", "baslangicTarihi":"2026-04-07T00:00:00", "bitisTarihi":"2026-05-09T00:00:00", "durum":"done",
+    "gorevler": [
+      { "gorevAdi":"İyzico ödeme entegrasyonu", "sorumlu":"Ahmet Yılmaz", "sorumluKisaltma":"AY", "sorumluRenk":"#8b5cf6", "durum":"done", "baslangicTarihi":"2026-04-07T00:00:00", "bitisTarihi":"2026-04-15T00:00:00" },
+      { "gorevAdi":"Kredi kartı tokenizasyonu", "sorumlu":"Ahmet Yılmaz", "sorumluKisaltma":"AY", "sorumluRenk":"#8b5cf6", "durum":"done", "baslangicTarihi":"2026-04-14T00:00:00", "bitisTarihi":"2026-04-20T00:00:00" },
+      { "gorevAdi":"Aylık abonelik planları", "sorumlu":"Selin Erdoğan", "sorumluKisaltma":"SE", "sorumluRenk":"#06b6d4", "durum":"done", "baslangicTarihi":"2026-04-10T00:00:00", "bitisTarihi":"2026-04-22T00:00:00" },
+      { "gorevAdi":"Fatura & makbuz sistemi (PDF)", "sorumlu":"Yusuf Arslan", "sorumluKisaltma":"YA", "sorumluRenk":"#f59e0b", "durum":"done", "baslangicTarihi":"2026-04-18T00:00:00", "bitisTarihi":"2026-04-28T00:00:00" },
+      { "gorevAdi":"Vergi & KDV hesaplama", "sorumlu":"Nisa Çelik", "sorumluKisaltma":"NÇ", "sorumluRenk":"#f59e0b", "durum":"done", "baslangicTarihi":"2026-04-25T00:00:00", "bitisTarihi":"2026-04-30T00:00:00" },
+      { "gorevAdi":"İndirim & kampanya modülü", "sorumlu":"Selin Erdoğan", "sorumluKisaltma":"SE", "sorumluRenk":"#06b6d4", "durum":"done", "baslangicTarihi":"2026-04-28T00:00:00", "bitisTarihi":"2026-05-05T00:00:00" },
+      { "gorevAdi":"Banka havalesi / EFT entegrasyonu", "sorumlu":"Ahmet Yılmaz", "sorumluKisaltma":"AY", "sorumluRenk":"#8b5cf6", "durum":"done", "baslangicTarihi":"2026-05-02T00:00:00", "bitisTarihi":"2026-05-08T00:00:00" }
+    ]
+  },
+  { "sprintNo":5, "baslik":"Mobil Uygulama & Bildirimler", "baslangicTarihi":"2026-05-12T00:00:00", "bitisTarihi":"2026-06-07T00:00:00", "durum":"done",
+    "gorevler": [
+      { "gorevAdi":"React Native kurulum & navigation", "sorumlu":"Fatma Demir", "sorumluKisaltma":"FD", "sorumluRenk":"#f59e0b", "durum":"done", "baslangicTarihi":"2026-05-12T00:00:00", "bitisTarihi":"2026-05-16T00:00:00" },
+      { "gorevAdi":"Kullanıcı giriş/kayıt ekranları", "sorumlu":"Fatma Demir", "sorumluKisaltma":"FD", "sorumluRenk":"#f59e0b", "durum":"done", "baslangicTarihi":"2026-05-15T00:00:00", "bitisTarihi":"2026-05-22T00:00:00" },
+      { "gorevAdi":"Push bildirim servisi (FCM)", "sorumlu":"Fatma Demir", "sorumluKisaltma":"FD", "sorumluRenk":"#f59e0b", "durum":"done", "baslangicTarihi":"2026-05-20T00:00:00", "bitisTarihi":"2026-05-28T00:00:00" },
+      { "gorevAdi":"Harita entegrasyonu (Google Maps API)", "sorumlu":"Yusuf Arslan", "sorumluKisaltma":"YA", "sorumluRenk":"#f59e0b", "durum":"done", "baslangicTarihi":"2026-05-18T00:00:00", "bitisTarihi":"2026-05-26T00:00:00" },
+      { "gorevAdi":"QR kod ile giriş sistemi", "sorumlu":"Fatma Demir", "sorumluKisaltma":"FD", "sorumluRenk":"#f59e0b", "durum":"done", "baslangicTarihi":"2026-05-26T00:00:00", "bitisTarihi":"2026-06-02T00:00:00" },
+      { "gorevAdi":"Mobil ödeme akışı (Apple/Google Pay)", "sorumlu":"Ahmet Yılmaz", "sorumluKisaltma":"AY", "sorumluRenk":"#8b5cf6", "durum":"done", "baslangicTarihi":"2026-05-28T00:00:00", "bitisTarihi":"2026-06-04T00:00:00" },
+      { "gorevAdi":"Favori otopark kaydetme", "sorumlu":"Fatma Demir", "sorumluKisaltma":"FD", "sorumluRenk":"#f59e0b", "durum":"done", "baslangicTarihi":"2026-06-01T00:00:00", "bitisTarihi":"2026-06-05T00:00:00" },
+      { "gorevAdi":"iOS & Android build işlemleri", "sorumlu":"Mert Kaya", "sorumluKisaltma":"MK", "sorumluRenk":"#10b981", "durum":"done", "baslangicTarihi":"2026-06-04T00:00:00", "bitisTarihi":"2026-06-07T00:00:00" }
+    ]
+  },
+  { "sprintNo":6, "baslik":"Test, Güvenlik & Canlıya Alım", "baslangicTarihi":"2026-06-10T00:00:00", "bitisTarihi":"2026-06-30T00:00:00", "durum":"active",
+    "gorevler": [
+      { "gorevAdi":"End-to-end testler (Cypress)", "sorumlu":"Berk Toprak", "sorumluKisaltma":"BT", "sorumluRenk":"#f59e0b", "durum":"done", "baslangicTarihi":"2026-06-10T00:00:00", "bitisTarihi":"2026-06-14T00:00:00" },
+      { "gorevAdi":"Güvenlik penetrasyon testi", "sorumlu":"Mert Kaya", "sorumluKisaltma":"MK", "sorumluRenk":"#10b981", "durum":"done", "baslangicTarihi":"2026-06-12T00:00:00", "bitisTarihi":"2026-06-16T00:00:00" },
+      { "gorevAdi":"KVKK uyumluluk denetimi", "sorumlu":"Nisa Çelik", "sorumluKisaltma":"NÇ", "sorumluRenk":"#f59e0b", "durum":"done", "baslangicTarihi":"2026-06-10T00:00:00", "bitisTarihi":"2026-06-13T00:00:00" },
+      { "gorevAdi":"Yük ve performans testleri (k6)", "sorumlu":"Berk Toprak", "sorumluKisaltma":"BT", "sorumluRenk":"#f59e0b", "durum":"active", "baslangicTarihi":"2026-06-15T00:00:00", "bitisTarihi":null },
+      { "gorevAdi":"SSL/TLS sertifika yapılandırması", "sorumlu":"Mert Kaya", "sorumluKisaltma":"MK", "sorumluRenk":"#10b981", "durum":"active", "baslangicTarihi":"2026-06-16T00:00:00", "bitisTarihi":null },
+      { "gorevAdi":"Canlı ortam (AWS) production kurulumu", "sorumlu":"Mert Kaya", "sorumluKisaltma":"MK", "sorumluRenk":"#10b981", "durum":"pending", "baslangicTarihi":null, "bitisTarihi":null },
+      { "gorevAdi":"Kullanıcı kabul testi (UAT)", "sorumlu":"Nisa Çelik", "sorumluKisaltma":"NÇ", "sorumluRenk":"#f59e0b", "durum":"pending", "baslangicTarihi":null, "bitisTarihi":null },
+      { "gorevAdi":"Bakım & SLA dokümantasyonu", "sorumlu":"Can Öztürk", "sorumluKisaltma":"CÖ", "sorumluRenk":"#3b82f6", "durum":"pending", "baslangicTarihi":null, "bitisTarihi":null }
+    ]
+  }
+  ], 
+  team: [
+    { "adSoyad":"Can Öztürk", "kisaltma":"CÖ", "rol":"Yazılım Mimarı & Backend Lead", "uzmanliklar":"Node.js,TypeScript,REST API,JWT,Mimari", "aylikUcret":52000, "projedekiAy":6, "renkKod":"#3b82f6", "renkKod2":"#06b6d4" },
+    { "adSoyad":"Ahmet Yılmaz", "kisaltma":"AY", "rol":"Kıdemli Backend Geliştirici", "uzmanliklar":"PostgreSQL,Prisma ORM,Redis,WebSocket,İyzico API", "aylikUcret":44000, "projedekiAy":4, "renkKod":"#8b5cf6", "renkKod2":"#ec4899" },
+    { "adSoyad":"Selin Erdoğan","kisaltma":"SE", "rol":"Backend Geliştirici", "uzmanliklar":"Node.js,Rezervasyon,Plaka API,Abonelik", "aylikUcret":38000, "projedekiAy":4, "renkKod":"#06b6d4", "renkKod2":"#10b981" },
+    { "adSoyad":"Elif Şahin", "kisaltma":"EŞ", "rol":"UI/UX & Frontend Tasarımcı", "uzmanliklar":"Figma,React.js,CSS/SCSS,Animasyon", "aylikUcret":35000, "projedekiAy":4, "renkKod":"#ec4899", "renkKod2":"#8b5cf6" },
+    { "adSoyad":"Fatma Demir", "kisaltma":"FD", "rol":"Mobil Uygulama Geliştirici", "uzmanliklar":"React Native,Expo,FCM,iOS/Android", "aylikUcret":40000, "projedekiAy":2, "renkKod":"#f59e0b", "renkKod2":"#ec4899" },
+    { "adSoyad":"Yusuf Arslan", "kisaltma":"YA", "rol":"Frontend Geliştirici", "uzmanliklar":"React.js,Harita API,Dashboard,Raporlama", "aylikUcret":34000, "projedekiAy":4, "renkKod":"#f59e0b", "renkKod2":"#10b981" },
+    { "adSoyad":"Mert Kaya", "kisaltma":"MK", "rol":"DevOps & Güvenlik Mühendisi", "uzmanliklar":"Docker,AWS,CI/CD,SSL/TLS,Pentest", "aylikUcret":46000, "projedekiAy":4, "renkKod":"#10b981", "renkKod2":"#3b82f6" },
+    { "adSoyad":"Berk Toprak", "kisaltma":"BT", "rol":"QA & Test Mühendisi", "uzmanliklar":"Jest,Cypress,k6,UAT", "aylikUcret":32000, "projedekiAy":2, "renkKod":"#f59e0b", "renkKod2":"#ef4444" },
+    { "adSoyad":"Nisa Çelik", "kisaltma":"NÇ", "rol":"Proje Yöneticisi (PM)", "uzmanliklar":"Scrum,Agile,KVKK,Finans", "aylikUcret":48000, "projedekiAy":6, "renkKod":"#f59e0b", "renkKod2":"#8b5cf6" }
+  ], 
+  reports: [
+    { "haftaNo":1, "haftaAdi":"Hafta 1", "tarihler":"6–10 Ocak 2026", "sprint":"Sprint 1", "tamamlananGorev":6, "devamEdenGorev":2, "engelleyici":0, "verimlilik":94, "notlar":"Proje resmi olarak başlatıldı. Kick-off toplantısı yapıldı. İhtiyaç analizi belgesi oluşturuldu. Paydaşlarla ilk görüşmeler tamamlandı." },
+    { "haftaNo":2, "haftaAdi":"Hafta 2", "tarihler":"13–17 Ocak 2026", "sprint":"Sprint 1", "tamamlananGorev":8, "devamEdenGorev":3, "engelleyici":0, "verimlilik":96, "notlar":"Veritabanı şema tasarımı tamamlandı. UI/UX wireframe çalışmaları başladı. Teknoloji stack kararları finalize edildi. Docker ortamı hazırlandı." },
+    { "haftaNo":3, "haftaAdi":"Hafta 3", "tarihler":"20–24 Ocak 2026", "sprint":"Sprint 1", "tamamlananGorev":7, "devamEdenGorev":2, "engelleyici":1, "verimlilik":88, "notlar":"Figma prototip taslağı hazırlandı. Bir blocker: Plaka tanıma API seçimi gecikti, alternatif tedarikçi değerlendirme yapıldı. Çözüme kavuşturuldu." },
+    { "haftaNo":4, "haftaAdi":"Hafta 4", "tarihler":"27–31 Ocak 2026", "sprint":"Sprint 1", "tamamlananGorev":10, "devamEdenGorev":0, "engelleyici":0, "verimlilik":100, "notlar":"Sprint 1 başarıyla tamamlandı. Tüm tasarım dokümanları onaylandı. Plaka API seçimi yapıldı. Sprint 2 planlaması tamamlandı." },
+    { "haftaNo":5, "haftaAdi":"Hafta 5", "tarihler":"3–7 Şubat 2026", "sprint":"Sprint 2", "tamamlananGorev":9, "devamEdenGorev":3, "engelleyici":0, "verimlilik":91, "notlar":"PostgreSQL kurulumu ve Prisma ORM entegrasyonu tamamlandı. JWT token sistemi çalışır hale getirildi. CI/CD pipeline tasarımı başladı." },
+    { "haftaNo":6, "haftaAdi":"Hafta 6", "tarihler":"10–14 Şubat 2026", "sprint":"Sprint 2", "tamamlananGorev":8, "devamEdenGorev":4, "engelleyici":0, "verimlilik":89, "notlar":"RESTful API temel endpointleri yazıldı. RBAC uygulandı. Docker Compose yapılandırması çalışır durumda. Unit test altyapısı kuruldu." },
+    { "haftaNo":7, "haftaAdi":"Hafta 7", "tarihler":"17–28 Şubat 2026", "sprint":"Sprint 2", "tamamlananGorev":11, "devamEdenGorev":0, "engelleyici":0, "verimlilik":100, "notlar":"Sprint 2 tamamlandı. Redis entegrasyonu yapıldı. Kullanıcı yönetim modülü tamamlandı. GitHub Actions CI/CD devreye alındı. Swagger dokümantasyonu oluşturuldu." },
+    { "haftaNo":8, "haftaAdi":"Hafta 8", "tarihler":"3–14 Mart 2026", "sprint":"Sprint 3", "tamamlananGorev":14, "devamEdenGorev":2, "engelleyici":0, "verimlilik":92, "notlar":"Park alanı yönetim modülü tamamlandı. Araç giriş/çıkış endpointleri yazıldı. Admin dashboard teslim edildi. WebSocket bağlantısı test edildi." },
+    { "haftaNo":9, "haftaAdi":"Hafta 9", "tarihler":"17–31 Mart 2026", "sprint":"Sprint 3", "tamamlananGorev":12, "devamEdenGorev":0, "engelleyici":0, "verimlilik":100, "notlar":"Sprint 3 tamamlandı. Gerçek zamanlı doluluk takibi aktif. Rezervasyon sistemi çekirdeği hazır. Harita görünümü finalize edildi." },
+    { "haftaNo":10, "haftaAdi":"Hafta 10", "tarihler":"7–21 Nisan 2026", "sprint":"Sprint 4", "tamamlananGorev":9, "devamEdenGorev":3, "engelleyici":1, "verimlilik":84, "notlar":"İyzico sandbox entegrasyonu tamamlandı. Abonelik planları backend hazır. Blocker: İyzico production onayı beklendi. Fatura PDF modülü başladı. Çözüme kavuşturuldu." },
+    { "haftaNo":11, "haftaAdi":"Hafta 11", "tarihler":"22 Nisan–9 Mayıs 2026", "sprint":"Sprint 4", "tamamlananGorev":13, "devamEdenGorev":0, "engelleyici":0, "verimlilik":100, "notlar":"Sprint 4 tamamlandı. İyzico production onayı alındı. Tüm ödeme modülleri, abonelik planları, fatura sistemi ve EFT entegrasyonu çalışıyor." },
+    { "haftaNo":12, "haftaAdi":"Hafta 12", "tarihler":"12–31 Mayıs 2026", "sprint":"Sprint 5", "tamamlananGorev":11, "devamEdenGorev":3, "engelleyici":0, "verimlilik":90, "notlar":"React Native uygulaması kuruldu. Giriş/kayıt ekranları, FCM push bildirimleri ve Google Maps entegrasyonu tamamlandı. QR kod sistemi başladı." },
+    { "haftaNo":13, "haftaAdi":"Hafta 13", "tarihler":"1–7 Haziran 2026", "sprint":"Sprint 5", "tamamlananGorev":8, "devamEdenGorev":0, "engelleyici":0, "verimlilik":100, "notlar":"Sprint 5 tamamlandı. QR kod girişi, Apple/Google Pay entegrasyonu, favori otopark özelliği ve iOS & Android build işlemleri tamamlandı." }
+  ], 
+  budget: [
+    { "kategori":"Personel Maliyeti", "kategoriIkon":"💼", "tutar":519000, "aciklama":"9 ekip üyesi toplam maaş ödemeleri", "renkKod":"#3b82f6", "siraNo":1 },
+    { "kategori":"Altyapı & Lisans", "kategoriIkon":"🖥️", "tutar":86000, "aciklama":"AWS, lisanslar, API'lar", "renkKod":"#8b5cf6", "siraNo":2 },
+    { "kategori":"Araç & Yazılım", "kategoriIkon":"⚡", "tutar":42000, "aciklama":"Jira, Figma, GitHub vb.", "renkKod":"#10b981", "siraNo":3 },
+    { "kategori":"Test & Güvenlik", "kategoriIkon":"🧪", "tutar":28000, "aciklama":"Penetrasyon testi, sertifika", "renkKod":"#f59e0b", "siraNo":4 },
+    { "kategori":"Eğitim & Dokümantasyon", "kategoriIkon":"📢", "tutar":14000, "aciklama":"Kullanıcı kılavuzları, eğitimler", "renkKod":"#06b6d4", "siraNo":5 },
+    { "kategori":"Bütçe Tasarrufu", "kategoriIkon":"🎉", "tutar":11000, "aciklama":"Bütçe altında teslim", "renkKod":"#10b981", "siraNo":6 }
+  ] 
+};
+
+const PROJ_START = new Date('2026-01-06').getTime();
+const PROJ_END   = new Date('2026-06-30').getTime();
+const TOTAL_DAYS = (PROJ_END - PROJ_START) / 86400000;
+
+// Gantt State
+let activeMemberFilter = 'all';
+let ganttGrouping = 'sprint';
+
+// Reports Pagination State
+let visibleReportsLimit = 15;
+
+function loadMoreReports() {
+  visibleReportsLimit += 15;
+  renderAll();
+}
+
+function generateDailyReports(simDateMs) {
+  const start = new Date('2026-01-06');
+  const end = new Date(simDateMs);
+  
+  const dailyReports = [];
+  
+  function toYMD(d) {
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+  
+  let current = new Date(start);
+  let dayCounter = 1;
+  
+  const genericSummaries = [
+    "Bugün ekip genel olarak kod kalitesini artırmaya yönelik refaktör çalışmaları ve düzenli kod incelemelerine (code review) odaklandı. Sistem kararlılığı için entegrasyon testleri gözden geçirildi.",
+    "Bugün düzenli haftalık eşleşme ve günlük stand-up toplantıları yapıldı. Ekip, modüller arası veri iletişiminin kararlılığını test etti. Herhangi bir engelleyici unsur bulunmuyor.",
+    "Arayüz geliştirmelerinde kullanıcı deneyimini iyileştirmeye yönelik ufak düzeltmeler ve ince ayarlamalar yapıldı. Mobil ve web ekranlarının uyumluluğu kontrol edildi.",
+    "Veritabanı sorgularının performans optimizasyonuna ve indeksleme ayarlarına odaklanıldı. Yanıt sürelerinde ortalama %15 iyileşme sağlandı.",
+    "Test senaryolarının kapsamı genişletildi. Jest ve Cypress testleri çalıştırılarak hata oranları minimize edildi. Kod kapsama oranı (coverage) artırıldı.",
+    "Proje dokümantasyonu, teknik kılavuzlar ve Swagger API dokümantasyonu güncellendi. Ekip üyeleri arası iş birliği ile bilgi transferi sağlandı.",
+    "Teknik borçların azaltılması kapsamında eskiyen paketler güncellendi ve kullanılmayan kod blokları temizlenerek sistem performansı optimize edildi."
+  ];
+
+  const genericAktiviteler = [
+    [
+      "Ekip günlük stand-up toplantısı gerçekleştirildi.",
+      "Modüller arası entegrasyon testleri başarıyla koşuldu.",
+      "Kod inceleme (code review) süreçleri yürütüldü."
+    ],
+    [
+      "Hata düzeltmeleri ve arayüz optimizasyonları yapıldı.",
+      "CSS tasarım standartları ve renk uyumu kontrol edildi.",
+      "Performans ölçümleri tamamlandı."
+    ],
+    [
+      "Veritabanı bağlantı havuzu ayarları kontrol edildi.",
+      "API dokümantasyonuna yeni şemalar eklendi.",
+      "Ön bellek temizleme mekanizması test edildi."
+    ]
+  ];
+
+  function getLogIndex(str) {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+      hash = str.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    return Math.abs(hash);
+  }
+
+  while (current.getTime() <= end.getTime()) {
+    const ymd = toYMD(current);
+    const dateStr = current.toLocaleDateString('tr-TR', { day: '2-digit', month: 'long', year: 'numeric', weekday: 'long' });
+    
+    let activeSprint = null;
+    dbData.sprints.forEach(s => {
+      const sS = toYMD(new Date(s.baslangicTarihi));
+      const sE = toYMD(new Date(s.bitisTarihi));
+      if (ymd >= sS && ymd <= sE) {
+        activeSprint = s;
+      }
+    });
+    
+    if (!activeSprint) {
+      activeSprint = dbData.sprints[dbData.sprints.length - 1];
+      for(let i=0; i<dbData.sprints.length; i++) {
+        const s = dbData.sprints[i];
+        if (ymd <= toYMD(new Date(s.bitisTarihi))) {
+          activeSprint = s;
+          break;
+        }
+      }
+    }
+    
+    const starts = [];
+    const ends = [];
+    let activeTasksCount = 0;
+    
+    dbData.sprints.forEach(s => {
+      s.gorevler.forEach(g => {
+        if (!g.baslangicTarihi) return;
+        const gStart = toYMD(new Date(g.baslangicTarihi));
+        const gEnd = g.bitisTarihi ? toYMD(new Date(g.bitisTarihi)) : toYMD(new Date(s.bitisTarihi));
+        
+        if (ymd === gStart) {
+          starts.push(g);
+        }
+        if (ymd === gEnd) {
+          ends.push(g);
+        }
+        if (ymd >= gStart && ymd <= gEnd) {
+          activeTasksCount++;
+        }
+      });
+    });
+    
+    let blocker = 0;
+    if (ymd === '2026-01-22') blocker = 1; 
+    if (ymd === '2026-04-14') blocker = 1; 
+    
+    let efficiency = 92;
+    if (blocker > 0) {
+      efficiency = 80;
+    } else if (ends.length > 0) {
+      efficiency = 95 + Math.min(5, ends.length); 
+    } else {
+      efficiency = 90 + (dayCounter % 6);
+    }
+    
+    let ozetText = "";
+    let aktiviteler = [];
+    let gelecekPlan = "Mevcut sprint planına göre geliştirme faaliyetlerinin devam ettirilmesi hedeflenmektedir.";
+    
+    const idx = getLogIndex(ymd);
+    
+    if (starts.length > 0 || ends.length > 0) {
+      if (ends.length > 0 && starts.length > 0) {
+        ozetText = `Bugün projede hareketli bir gündü. Ekipte bazı görevler başarıyla tamamlanırken, yeni görevlerin geliştirme süreçleri de resmen başlatıldı. Proje ilerleme hızı planlar doğrultusunda seyrediyor.`;
+      } else if (ends.length > 0) {
+        ozetText = `Bugün hedeflenen bazı kritik görevler başarıyla tamamlandı. Yapılan son testlerin ardından geliştirmeler ana dala entegre edildi. Proje takvimine olumlu bir katkı sağlandı.`;
+      } else {
+        ozetText = `Mevcut sprint kapsamındaki yeni iş paketlerine başlandı. Görevlerin analiz süreçleri tamamlanarak kodlama ve tasarım aşamalarına geçiş yapıldı.`;
+      }
+      
+      starts.forEach(g => {
+        aktiviteler.push(`🚀 <strong>${g.sorumlu}</strong>, "${g.gorevAdi}" görevine başladı.`);
+      });
+      ends.forEach(g => {
+        aktiviteler.push(`✅ <strong>${g.sorumlu}</strong>, "${g.gorevAdi}" görevini başarıyla tamamladı.`);
+      });
+      if (blocker > 0) {
+        aktiviteler.push(`⚠️ <strong>Engelleyici Durum:</strong> Beklenmeyen bir teknik/idari engel tespit edildi. Çözüm ekibi kuruldu.`);
+        ozetText += ` Ancak gün içerisinde bir engelleyici unsur (blocker) ile karşılaşıldı. Sorunun çözümü için acil toplantı planlandı.`;
+        gelecekPlan = "Engelleyici sorunun ortadan kaldırılması ve tıkanan iş akışının tekrar açılması öncelikli plandır.";
+      } else {
+        gelecekPlan = "Tamamlanan görevlerin canlıya hazırlık süreçleri yürütülecek ve sıradaki görevlere başlanacaktır.";
+      }
+    } else {
+      ozetText = genericSummaries[idx % genericSummaries.length];
+      const items = genericAktiviteler[idx % genericAktiviteler.length];
+      items.forEach(it => aktiviteler.push(it));
+      if (dayCounter % 3 === 0) {
+        gelecekPlan = "Kod refaktör süreçlerinin tamamlanarak entegrasyon testlerine ağırlık verilmesi planlanmaktadır.";
+      } else if (dayCounter % 3 === 1) {
+        gelecekPlan = "Arayüz geliştirmelerinin tamamlanması ve QA ekibine test için devredilmesi planlanmaktadır.";
+      } else {
+        gelecekPlan = "Veritabanı optimizasyonlarının ve önbellek mekanizmalarının devreye alınması planlanmaktadır.";
+      }
+    }
+    
+    dailyReports.push({
+      dayNo: dayCounter,
+      date: dateStr,
+      ymd: ymd,
+      sprintName: activeSprint ? `Sprint ${activeSprint.sprintNo}` : 'Genel Süreç',
+      tamamlananGorev: ends.length,
+      devamEdenGorev: activeTasksCount,
+      engelleyici: blocker,
+      verimlilik: efficiency,
+      gonderen: "Nisa Çelik (Proje Yöneticisi)",
+      gonderenKisaltma: "NÇ",
+      gonderenRenk: "#f59e0b",
+      ozet: ozetText,
+      aktiviteler: aktiviteler,
+      gelecekPlan: gelecekPlan
+    });
+    
+    current.setDate(current.getDate() + 1);
+    dayCounter++;
+  }
+  
+  return dailyReports;
+}
+
+function renderGanttFilters() {
+  const container = document.getElementById('gantt-member-filters');
+  if (!container) return;
+  
+  let html = `<span class="filter-lbl">👤 Kişi Filtresi:</span>`;
+  
+  const allActive = activeMemberFilter === 'all' ? 'active' : '';
+  html += `
+    <button class="m-filter-btn ${allActive}" onclick="setGanttMemberFilter('all')">
+      <span class="avatar-mini" style="background:#4b5568">👥</span>
+      Tüm Ekip
+    </button>
+  `;
+  
+  dbData.team.forEach(t => {
+    const active = activeMemberFilter === t.adSoyad ? 'active' : '';
+    html += `
+      <button class="m-filter-btn ${active}" onclick="setGanttMemberFilter('${t.adSoyad}')">
+        <span class="avatar-mini" style="background:${t.renkKod}">${t.kisaltma}</span>
+        ${t.adSoyad}
+      </button>
+    `;
+  });
+  
+  container.innerHTML = html;
+}
+
+function setGanttMemberFilter(member) {
+  activeMemberFilter = member;
+  renderGanttFilters();
+  renderAll();
+}
+
+function setGanttGrouping(grouping) {
+  ganttGrouping = grouping;
+  document.getElementById('g-grp-sprint').classList.toggle('active', grouping === 'sprint');
+  document.getElementById('g-grp-person').classList.toggle('active', grouping === 'person');
+  renderAll();
+}
+
+function init() {
+  // Veritabanı yerine hardcoded data yüklendi
+  renderGanttFilters();
+  renderAll();
+}
+
+function go(tab) {
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
+  document.querySelector(`[data-tab="${tab}"]`).classList.add('active');
+  document.getElementById('tab-'+tab).classList.add('active');
+  
+  const TABS = {
+    dashboard:['Genel Bakış','Zaman makinesi ile dinamik gösterge paneli'],
+    sprints:  ['Sprintler','Zaman bazlı sprint ilerlemeleri'],
+    gantt:    ['Gantt Şeması','Tüm görevlerin zaman çizelgesi'],
+    team:     ['Proje Ekibi','Zaman bazlı hak ediş ve maliyetler'],
+    budget:   ['Bütçe Yönetimi','Zaman bazlı kümülatif bütçe harcaması'],
+    reports:  ['Günlük Raporlar','Zaman makinesine göre günlük statü ve aktivite raporları'],
+    'final-report':['Proje Sonu Raporu','6 aylık projenin kapsamlı kapanış belgesi']
+  };
+  document.getElementById('topbar-title').textContent = TABS[tab][0];
+  document.getElementById('topbar-sub').textContent = TABS[tab][1];
+  if (tab === 'final-report') renderFinalReport();
+}
+
+  // ── ANA RENDER FONKSİYONU ──
+function renderAll() {
+  const simDateStr = document.getElementById('time-machine').value;
+  const simDate = new Date(simDateStr).getTime();
+  const simDateObj = new Date(simDateStr);
+  
+  // Calculate Task states
+  let totalTasks = 0;
+  let doneTasks = 0;
+  let progTasks = 0;
+  
+  // Track stats for each person
+  let personStats = {};
+  dbData.team.forEach(t => {
+    personStats[t.adSoyad] = { total: 0, done: 0, color: t.renkKod };
+  });
+  
+  // Create a deep copy to enrich with dynamic status
+  const dynSprints = JSON.parse(JSON.stringify(dbData.sprints));
+  
+  dynSprints.forEach(s => {
+    const sStart = new Date(s.baslangicTarihi).getTime();
+    const sEnd = new Date(s.bitisTarihi).getTime();
+    
+    if (simDate < sStart) s.dynDurum = 'pending';
+    else if (simDate > sEnd) s.dynDurum = 'done';
+    else s.dynDurum = 'active';
+
+    s.gorevler.forEach(g => {
+      totalTasks++;
+      if(personStats[g.sorumlu]) personStats[g.sorumlu].total++;
+      
+      if (g.baslangicTarihi) {
+        const gStart = new Date(g.baslangicTarihi).getTime();
+        const gEnd = g.bitisTarihi ? new Date(g.bitisTarihi).getTime() : sEnd;
+        
+        if (simDate < gStart) g.dynDurum = 'pending';
+        else if (simDate >= gEnd) { 
+          g.dynDurum = 'done'; 
+          doneTasks++; 
+          if(personStats[g.sorumlu]) personStats[g.sorumlu].done++;
+        }
+        else { g.dynDurum = 'active'; progTasks++; }
+      } else {
+        g.dynDurum = 'pending';
+      }
+    });
+  });
+
+  const pct = Math.round((doneTasks / totalTasks) * 100) || 0;
+  
+  // Update Topbar
+  const topStat = document.getElementById('top-status');
+  if (pct >= 100) { topStat.className='pill pill-green'; topStat.textContent='🚀 Sistem Canlıda'; }
+  else { topStat.className='pill pill-orange'; topStat.textContent='⏳ Proje Devam Ediyor'; }
+
+  // 1. DASHBOARD
+  document.getElementById('ds-pct').textContent = pct + '%';
+  document.getElementById('ds-gorev').textContent = `${doneTasks} / ${totalTasks}`;
+  document.getElementById('db-main-pct').textContent = `%${pct} Tamamlandı`;
+  
+  if (pct === 100) {
+    document.getElementById('db-main-title').textContent = "Proje Başarıyla Tamamlandı & Canlıya Alındı!";
+    document.getElementById('db-main-sub').textContent = "Seçilen tarih itibariyle tüm süreçler bitmiş durumda.";
+  } else {
+    document.getElementById('db-main-title').textContent = "Zaman Makinesi Aktif";
+    document.getElementById('db-main-sub').textContent = `Seçilen tarih: ${fmtDate(simDateStr)}`;
+  }
+
+  // Bütçe Hesaplamaları
+  const daysPassed = Math.max(0, (simDate - PROJ_START) / 86400000);
+  let monthsPassed = daysPassed / 30;
+  if(monthsPassed < 0) monthsPassed = 0;
+  
+  let totalTeamCost = 0;
+  let teamGridHtml = '';
+  let dashTeamHtml = '';
+  
+  dbData.team.forEach(u => {
+    let workedMonths = Math.min(monthsPassed, u.projedekiAy);
+    let earned = Math.round(u.aylikUcret * workedMonths);
+    totalTeamCost += earned;
+    
+    // Team tablosu için (Genel Bakış)
+    const st = personStats[u.adSoyad] || { total:0, done:0 };
+    const pPct = st.total > 0 ? Math.round((st.done / st.total)*100) : 0;
+    
+    dashTeamHtml += `
+      <tr>
+        <td class="g-td" style="font-weight:600;display:flex;align-items:center;gap:10px">
+          <div style="width:24px;height:24px;border-radius:50%;background:${u.renkKod};color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px">${u.kisaltma}</div>
+          ${u.adSoyad}
+        </td>
+        <td class="g-td" style="color:var(--t2);font-size:11px">${u.rol}</td>
+        <td class="g-td" style="text-align:center;font-weight:600">${st.done} / ${st.total}</td>
+        <td class="g-td" style="width:150px">
+          <div class="prog-bar" style="background:rgba(255,255,255,.05);height:6px;margin-bottom:4px"><div class="prog-fill" style="width:${pPct}%;background:${u.renkKod}"></div></div>
+          <div style="font-size:10px;color:var(--t2);text-align:right">%${pPct} Tamamladı</div>
+        </td>
+        <td class="g-td" style="text-align:right;font-weight:700;color:var(--green)">₺${earned.toLocaleString('tr-TR')}</td>
+      </tr>
+    `;
+    
+    // Team grid için (Ekip sekmesi)
+    const tagColors = ['tag-blue','tag-purple','tag-green','tag-orange','tag-cyan','tag-pink'];
+    const tags = (u.uzmanliklar||'').split(',').filter(Boolean).map((t,ti)=>`<span class="tag ${tagColors[ti%tagColors.length]}">${t.trim()}</span>`).join('');
+    
+    teamGridHtml += `
+      <div class="team-card">
+        <div class="team-av" style="background:linear-gradient(135deg,${u.renkKod},${u.renkKod2});border-color:${u.renkKod}66">${u.kisaltma}</div>
+        <div class="team-name">${u.adSoyad}</div>
+        <div class="team-role">${u.rol}</div>
+        <div class="team-tags" style="margin:12px 0;display:flex;flex-wrap:wrap;justify-content:center;gap:4px">${tags}</div>
+        <div class="team-sal">
+          <strong style="color:${u.renkKod}">₺${earned.toLocaleString('tr-TR')} (Hak ediş)</strong>
+          <span>${workedMonths.toFixed(1)} ay çalıştı (${u.projedekiAy} ay anlaşmalı)</span>
+        </div>
+      </div>`;
+  });
+
+  document.getElementById('dash-team-prog').innerHTML = dashTeamHtml;
+  document.getElementById('team-grid').innerHTML = teamGridHtml;
+
+  const pctProj = Math.min(1, monthsPassed / 6);
+  let otherCosts = 0;
+  
+  let budGridHtml = '';
+  dbData.budget.forEach(b => {
+    if (b.kategori === 'Personel Maliyeti') {
+      budGridHtml += `<div class="bud-item"><div class="bud-lbl">💼 Personel Maliyeti</div><div class="bud-val" style="color:var(--blue)">₺${totalTeamCost.toLocaleString('tr-TR')}</div></div>`;
+      return;
+    }
+    if (b.kategori === 'Bütçe Tasarrufu') return;
+    
+    const currentCost = Math.round(b.tutar * pctProj);
+    otherCosts += currentCost;
+    budGridHtml += `<div class="bud-item"><div class="bud-lbl">${b.kategoriIkon} ${b.kategori}</div><div class="bud-val" style="color:${b.renkKod}">₺${currentCost.toLocaleString('tr-TR')}</div></div>`;
+  });
+  
+  document.getElementById('bud-grid').innerHTML = budGridHtml;
+
+  const totalCost = totalTeamCost + otherCosts;
+  const TOPLAM_BUTCE = 2500000;
+  const kalanButce = TOPLAM_BUTCE - totalCost;
+  
+  document.getElementById('ds-butce').textContent = '₺' + totalCost.toLocaleString('tr-TR');
+  document.getElementById('ds-kalan-butce').textContent = '₺' + kalanButce.toLocaleString('tr-TR');
+  document.getElementById('ds-kalan-butce-lbl').textContent = 'Toplam: ₺' + TOPLAM_BUTCE.toLocaleString('tr-TR') + ' üzerinden';
+  document.getElementById('bud-total-val').textContent = '₺' + totalCost.toLocaleString('tr-TR');
+
+  // Dynamic Savings Status
+  const dsTasarruf = document.getElementById('ds-tasarruf');
+  if (kalanButce >= 0) {
+    dsTasarruf.style.color = 'var(--green)';
+    dsTasarruf.textContent = '₺' + kalanButce.toLocaleString('tr-TR') + ' Tasarruf (Kâr)';
+  } else {
+    dsTasarruf.style.color = 'var(--red)';
+    dsTasarruf.textContent = '₺' + Math.abs(kalanButce).toLocaleString('tr-TR') + ' Bütçe Aşımı';
+  }
+
+  // Dynamic Budget Tab Subtitle
+  const budSub = document.getElementById('bud-sub');
+  if (kalanButce >= 0) {
+    budSub.innerHTML = 'Toplam Bütçe: ₺' + TOPLAM_BUTCE.toLocaleString('tr-TR') + ' | Kalan Tahmini Bütçe: <strong style="color:var(--green)">₺' + kalanButce.toLocaleString('tr-TR') + ' (Tasarruf/Kâr)</strong>';
+  } else {
+    budSub.innerHTML = 'Toplam Bütçe: ₺' + TOPLAM_BUTCE.toLocaleString('tr-TR') + ' | Kalan Tahmini Bütçe: <strong style="color:var(--red)">₺' + kalanButce.toLocaleString('tr-TR') + ' (Bütçe Aşımı)</strong>';
+  }
+
+  // Dashboard Sprint Progress
+  document.getElementById('dash-sprint-prog').innerHTML = dynSprints.map(s => {
+    let fillPct = 0, color='fill-orange';
+    if (s.dynDurum === 'done') { fillPct = 100; color='fill-green'; }
+    else if (s.dynDurum === 'active') { 
+      const sS = new Date(s.baslangicTarihi).getTime(), sE = new Date(s.bitisTarihi).getTime();
+      fillPct = Math.min(100, Math.max(5, ((simDate - sS) / (sE - sS)) * 100));
+      color = 'fill-blue';
+    }
+    return `
+      <div class="prog-wrap">
+        <div class="prog-lbl"><span>Sprint ${s.sprintNo} — ${s.baslik}</span><span style="color:var(--t2)">${s.dynDurum==='done'?'✔ Bitti':(s.dynDurum==='active'?'Devam Ediyor':'Bekliyor')}</span></div>
+        <div class="prog-bar" style="background:rgba(255,255,255,.05)"><div class="prog-fill ${color}" style="width:${fillPct}%"></div></div>
+      </div>`;
+  }).join('');
+
+  // 2. SPRINTLER (Sprint sekmesi)
+  document.getElementById('sprint-grid').innerHTML = dynSprints.map(s => {
+    let bClass = 'b-pending', bText = 'BEKLİYOR';
+    if(s.dynDurum==='done'){bClass='b-done'; bText='TAMAMLANDI';}
+    if(s.dynDurum==='active'){bClass='b-active'; bText='AKTİF';}
+
+    return `
+      <div class="sprint-card" style="${s.dynDurum==='active'?'border-color:var(--blue);box-shadow:0 0 15px rgba(59,130,246,.1)':(s.dynDurum==='done'?'border-color:rgba(16,185,129,.3)':'opacity:0.6')}">
+        <div class="sprint-header">
+          <span class="sprint-num">Sprint ${s.sprintNo}</span>
+          <span class="s-badge ${bClass}">${bText}</span>
+        </div>
+        <div class="sprint-title">${s.baslik}</div>
+        <div class="sprint-dates">📅 ${fmtDate(s.baslangicTarihi)} – ${fmtDate(s.bitisTarihi)}</div>
+        <div class="task-list" style="margin-top:16px">
+          ${s.gorevler.map(g => {
+            let tc = 'pend', mark = '';
+            if(g.dynDurum==='done'){ tc='done'; mark='✓'; }
+            if(g.dynDurum==='active'){ tc='prog'; mark='⏳'; }
+            return `
+            <div class="ti">
+              <div class="ti-check ${tc}">${mark}</div>
+              <span style="${g.dynDurum==='done'?'text-decoration:line-through;color:var(--t3)':''}">${g.gorevAdi}</span>
+              <div class="ti-ass"><div class="ma" style="background:${g.sorumluRenk}">${g.sorumluKisaltma}</div></div>
+            </div>`;
+          }).join('')}
+        </div>
+      </div>`;
+  }).join('');
+
+  // 3. GANTT
+  const ganttLine = document.getElementById('gantt-vline');
+  const simOff = Math.max(0, Math.min(TOTAL_DAYS, (simDate - PROJ_START) / 86400000));
+  ganttLine.style.left = ((simOff / TOTAL_DAYS) * 100) + '%';
+
+  const tbody = document.getElementById('gantt-body');
+  tbody.innerHTML = '';
+
+  function createGanttRow(g) {
+    const gS = g.baslangicTarihi ? new Date(g.baslangicTarihi).getTime() : PROJ_START;
+    const gE = g.bitisTarihi ? new Date(g.bitisTarihi).getTime() : (gS + 86400000*2);
+    const startOff = (gS - PROJ_START) / 86400000;
+    const dur = (gE - gS) / 86400000;
+    const lp = (startOff / TOTAL_DAYS) * 100;
+    const wp = Math.max((dur / TOTAL_DAYS) * 100, 1);
+    
+    let bg = '#4b5568'; let stText = 'Bekliyor';
+    if(g.dynDurum==='done'){ bg='#10b981'; stText='✅'; }
+    if(g.dynDurum==='active'){ bg='#3b82f6'; stText='⏳'; }
+
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td class="g-td" style="font-weight:600;min-width:200px;${g.dynDurum==='done'?'text-decoration:line-through;color:var(--t3)':''}">${g.gorevAdi}</td>
+      <td class="g-td" style="font-size:11px;color:var(--t2)">
+        <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${g.sorumluRenk};margin-right:4px"></span>
+        ${g.sorumlu}
+      </td>
+      <td class="g-td" style="font-size:11px;color:var(--t2)">${fmtDateShort(g.baslangicTarihi)}</td>
+      <td class="g-td" style="font-size:11px;color:var(--t2)">${fmtDateShort(g.bitisTarihi)}</td>
+      <td class="g-td">${stText}</td>
+      <td class="g-bar-cell"><div class="g-bar-wrap" style="min-width:420px">
+        <div class="g-bar" style="left:${lp}%;width:${wp}%;background:${bg};">${g.gorevAdi.split(' ')[0]}</div>
+      </div></td>`;
+    return row;
+  }
+
+  if (ganttGrouping === 'sprint') {
+    dynSprints.forEach(s => {
+      const tasks = s.gorevler.filter(g => activeMemberFilter === 'all' || g.sorumlu === activeMemberFilter);
+      if (tasks.length === 0) return;
+
+      const hdr = document.createElement('tr');
+      hdr.innerHTML = `<td colspan="6" style="padding:10px 12px 4px;font-size:11px;font-weight:700;color:${s.dynDurum==='active'?'var(--blue)':'var(--t3)'};text-transform:uppercase;background:rgba(255,255,255,.02)">Sprint ${s.sprintNo} — ${s.baslik}</td>`;
+      tbody.appendChild(hdr);
+      
+      tasks.forEach(g => {
+        tbody.appendChild(createGanttRow(g));
+      });
+    });
+  } else {
+    dbData.team.forEach(t => {
+      if (activeMemberFilter !== 'all' && t.adSoyad !== activeMemberFilter) return;
+
+      const tasks = [];
+      dynSprints.forEach(s => {
+        s.gorevler.forEach(g => {
+          if (g.sorumlu === t.adSoyad) {
+            tasks.push(g);
+          }
+        });
+      });
+
+      if (tasks.length === 0) return;
+
+      const hdr = document.createElement('tr');
+      hdr.innerHTML = `
+        <td colspan="6" style="padding:10px 12px 4px;font-size:11px;font-weight:700;color:${t.renkKod};text-transform:uppercase;background:rgba(255,255,255,.02)">
+          <div style="display:flex;align-items:center;gap:8px">
+            <span style="display:inline-flex;width:18px;height:18px;border-radius:50%;background:${t.renkKod};color:#fff;align-items:center;justify-content:center;font-size:9px;font-weight:700">${t.kisaltma}</span>
+            ${t.adSoyad} — <span style="color:var(--t2);text-transform:none;font-weight:normal">${t.rol}</span>
+          </div>
+        </td>`;
+      tbody.appendChild(hdr);
+
+      tasks.forEach(g => {
+        tbody.appendChild(createGanttRow(g));
+      });
+    });
+  }
+
+  // 5. RAPORLAR
+  const repList = document.getElementById('rep-list');
+  const allDailyReports = generateDailyReports(simDate);
+  allDailyReports.reverse(); // Yeni olandan eski olana
+  
+  if (allDailyReports.length === 0) {
+    repList.innerHTML = `<div class="empty-st" style="padding:40px;text-align:center;color:var(--t3)">Seçilen tarihe kadar yayınlanmış günlük rapor bulunmuyor.</div>`;
+  } else {
+    const visibleReports = allDailyReports.slice(0, visibleReportsLimit);
+    let html = visibleReports.map(r=>`
+      <div class="rep-card" style="border-left:4px solid ${r.engelleyici > 0 ? 'var(--red)' : (r.tamamlananGorev > 0 ? 'var(--green)' : 'var(--blue)')}; margin-bottom: 24px; padding: 24px;">
+        <div class="rep-hdr" style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:16px;">
+          <div>
+            <div class="rep-week" style="font-size:16px; font-weight:800; color:var(--t1)">Gün ${r.dayNo} — ${r.sprintName}</div>
+            <div class="rep-date" style="font-size:12px; color:var(--t2); margin-top:2px">📅 ${r.date}</div>
+          </div>
+          <span class="pill ${r.verimlilik >= 90 ? 'pill-green' : (r.verimlilik >= 80 ? 'pill-blue' : 'pill-orange')}">%${r.verimlilik} Günlük Verimlilik</span>
+        </div>
+        
+        <div class="rep-metrics" style="display:grid; grid-template-columns:repeat(3, 1fr); gap:16px; margin: 16px 0; background:rgba(255,255,255,.02); padding:12px; border-radius:var(--rs); border:1px solid var(--bdr); text-align:center;">
+          <div class="rep-metric">
+            <strong style="color:var(--green); font-size:18px; display:block;">${r.tamamlananGorev}</strong>
+            <span style="font-size:11px; color:var(--t2)">Tamamlanan Görev</span>
+          </div>
+          <div class="rep-metric">
+            <strong style="color:var(--blue); font-size:18px; display:block;">${r.devamEdenGorev}</strong>
+            <span style="font-size:11px; color:var(--t2)">Aktif Görev Sayısı</span>
+          </div>
+          <div class="rep-metric">
+            <strong style="color:${r.engelleyici > 0 ? 'var(--red)' : 'var(--green)'}; font-size:18px; display:block;">${r.engelleyici}</strong>
+            <span style="font-size:11px; color:var(--t2)">Engelleyici (Blocker)</span>
+          </div>
+        </div>
+
+        <div style="margin-top:16px; line-height:1.6">
+          <div style="font-size:13px; font-weight:700; color:var(--cyan); margin-bottom:6px">📝 Günlük Özet</div>
+          <p style="font-size:13px; color:var(--t1); margin-bottom:14px">${r.ozet}</p>
+          
+          <div style="font-size:13px; font-weight:700; color:var(--green); margin-bottom:6px">⚡ Günlük Aktivite Günlüğü</div>
+          <ul style="padding-left:18px; margin-bottom:14px; font-size:12.5px; color:var(--t2)">
+            ${r.aktiviteler.map(a => `<li style="margin-bottom:4px">${a}</li>`).join('')}
+          </ul>
+          
+          <div style="font-size:13px; font-weight:700; color:var(--orange); margin-bottom:6px">📅 Yarının Planı</div>
+          <p style="font-size:12.5px; color:var(--t2); font-style:italic">${r.gelecekPlan}</p>
+        </div>
+
+        <div style="margin-top:16px; padding-top:14px; border-top:1px solid rgba(255,255,255,.05); display:flex; align-items:center; gap:10px; font-size:12px; color:var(--t2)">
+          <div style="width:24px; height:24px; border-radius:50%; background:${r.gonderenRenk}; color:#fff; display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:700">${r.gonderenKisaltma}</div>
+          <div>👤 <strong>Raporlayan:</strong> ${r.gonderen}</div>
+        </div>
+      </div>`).join('');
+      
+    if (allDailyReports.length > visibleReportsLimit) {
+      html += `
+        <div style="text-align:center;margin-top:24px;">
+          <button class="btn btn-ghost" onclick="loadMoreReports()">Daha Fazla Rapor Göster (+15 Gün)</button>
+        </div>
+      `;
+    }
+    repList.innerHTML = html;
+  }
+}
+
+function fmtDate(iso) { 
+  if(!iso) return '—';
+  return new Date(iso).toLocaleDateString('tr-TR',{day:'2-digit',month:'long',year:'numeric'}); 
+}
+function fmtDateShort(iso) { 
+  if(!iso) return '—';
+  return new Date(iso).toLocaleDateString('tr-TR',{day:'2-digit',month:'short'}); 
+}
+
+function renderFinalReport() {
+  const container = document.getElementById('final-report-content');
+  if (!container) return;
+
+  const totalTasks = dbData.sprints.reduce((acc, s) => acc + s.gorevler.length, 0);
+  const doneTasks = dbData.sprints.reduce((acc, s) => acc + s.gorevler.filter(g => g.durum === 'done').length, 0);
+  const TOPLAM_BUTCE = 2500000;
+  const TOPLAM_MALIYET = 702000;
+  const NET_KAR = TOPLAM_BUTCE - TOPLAM_MALIYET;
+  const PROJE_SURE = '6 Ay (Jan 2026 – Haz 2026)';
+  const TOPLAM_SPRINT = dbData.sprints.length;
+
+  const sprintColors = ['#3b82f6','#8b5cf6','#06b6d4','#10b981','#f59e0b','#ef4444'];
+
+  const sprintTimelineHtml = dbData.sprints.map((s, i) => {
+    const color = sprintColors[i % sprintColors.length];
+    const isLast = i === dbData.sprints.length - 1;
+    const taskCount = s.gorevler.length;
+    const doneCount = s.gorevler.filter(g => g.durum === 'done').length;
+    const pct = Math.round((doneCount / taskCount) * 100);
+    return `
+      <div class="fr-tl-item">
+        <div class="fr-tl-left">
+          <div class="fr-tl-dot" style="background:${color};border-color:${color}"></div>
+          ${!isLast ? `<div class="fr-tl-line" style="background:linear-gradient(to bottom,${color}66,transparent)"></div>` : ''}
+        </div>
+        <div class="fr-tl-content">
+          <div class="fr-tl-sprint" style="color:${color}">Sprint ${s.sprintNo}</div>
+          <div class="fr-tl-title">${s.baslik}</div>
+          <div class="fr-tl-desc">
+            Toplam <strong>${taskCount}</strong> görevden <strong>${doneCount}</strong> tanesi tamamlandı.
+            ${s.sprintNo === 1 ? ' Proje analiz ve planlama aşaması, UI/UX tasarım sistemi ve teknoloji seçimleri bu sprintte gerçekleştirildi.' : ''}
+            ${s.sprintNo === 2 ? ' PostgreSQL, Prisma ORM, JWT, RESTful API, Docker ve Redis altyapısı tam olarak kuruldu ve test edildi.' : ''}
+            ${s.sprintNo === 3 ? ' Otopark yönetimi, plaka tanıma, gerçek zamanlı doluluk, rezervasyon sistemi ve admin paneli hayata geçirildi.' : ''}
+            ${s.sprintNo === 4 ? ' İyzico ödeme entegrasyonu, abonelik planları, fatura sistemi ve EFT entegrasyonu tamamlandı. Bir blocker yaşandı ve çözüme kavuşturuldu.' : ''}
+            ${s.sprintNo === 5 ? ' React Native mobil uygulama, FCM push bildirimleri, Google Maps ve QR kod sistemi başarıyla teslim edildi.' : ''}
+            ${s.sprintNo === 6 ? ' End-to-end testler, güvenlik pentesti ve KVKK uyumluluk denetimi sürdürülmektedir. Yük testleri ve SSL/TLS yapılandırması devam ediyor. Canlı ortam kurulumu ve UAT planlanmaktadır.' : ''}
+          </div>
+          <div class="fr-tl-meta">📅 ${fmtDate(s.baslangicTarihi)} – ${fmtDate(s.bitisTarihi)} &nbsp;|&nbsp; ✅ %${pct} Tamamlandı</div>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  const teamHtml = dbData.team.map(t => {
+    const tasksDone = dbData.sprints.reduce((acc, s) => acc + s.gorevler.filter(g => g.sorumlu === t.adSoyad && g.durum === 'done').length, 0);
+    const totalMember = dbData.sprints.reduce((acc, s) => acc + s.gorevler.filter(g => g.sorumlu === t.adSoyad).length, 0);
+    const totalEarned = t.aylikUcret * t.projedekiAy;
+    return `
+      <div class="fr-team-item">
+        <div class="fr-team-av" style="background:linear-gradient(135deg,${t.renkKod},${t.renkKod2})">${t.kisaltma}</div>
+        <div>
+          <div class="fr-team-name">${t.adSoyad}</div>
+          <div class="fr-team-role">${t.rol}</div>
+          <div class="fr-team-stat">✅ ${tasksDone}/${totalMember} Görev &nbsp;|&nbsp; ₺${totalEarned.toLocaleString('tr-TR')}</div>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  container.innerHTML = `
+    <!-- HERO BANNER -->
+    <div class="fr-hero">
+      <div class="fr-hero-title">📊 OtoPark Sistemi — Proje Durum Raporu</div>
+      <div class="fr-hero-sub">Hazırlayan: <strong>Nisa Çelik</strong> (Proje Yöneticisi) &nbsp;|&nbsp; Rapor Tarihi: <strong>10 Haziran 2026</strong> &nbsp;|&nbsp; Gizlilik: <strong>Şirket İçi</strong></div>
+      <div class="fr-hero-pills">
+        <span class="pill pill-orange">⏳ Proje Devam Ediyor</span>
+        <span class="pill pill-blue">📅 6 Aylık Proje</span>
+        <span class="pill pill-green">💰 Bütçe Kontrolünde</span>
+        <span class="pill" style="background:rgba(139,92,246,.12);color:var(--purple);border:1px solid rgba(139,92,246,.3)">👥 9 Kişilik Ekip</span>
+      </div>
+    </div>
+
+    <!-- YÖNETİCİ ÖZETİ -->
+    <div class="fr-section">
+      <div class="fr-section-title">📝 Yönetici Özeti</div>
+      <div class="fr-section-sub">Projenin amacı, kapsamı ve güncel durum değerlendirmesi</div>
+      <p style="font-size:13.5px;line-height:1.8;color:var(--t1);margin-bottom:16px">
+        OtoPark Sistemi projesi, <strong>6 Ocak 2026</strong> tarihinde başlamış olup <strong>30 Haziran 2026</strong> hedef teslimat tarihiyle aktif şekilde sürmektedir. Proje kapsamında; tam entegre bir otopark yönetim platformu, gerçek zamanlı araç giriş/çıkış ve doluluk takip sistemi, çoklu ödeme yöntemi destekli abonelik platformu ve iOS/Android mobil uygulaması geliştirilmektedir.
+      </p>
+      <p style="font-size:13.5px;line-height:1.8;color:var(--t1);margin-bottom:16px">
+        Proje, 6 sprint üzerinden yürütülmekte olup şu ana kadar <strong>${doneTasks}</strong> görev tamamlanmış ve <strong>%${Math.round((doneTasks/totalTasks)*100)}</strong> tamamlama oranına ulaşılmıştır. Karşılaşılan 2 kritik engelleyici (blocker) durumu etkin risk yönetimiyle kısa sürede çözüme kavuşturulmuştur. Bütçe planlaması kontrol altında tutulmakta olup tahmini <strong>₺${NET_KAR.toLocaleString('tr-TR')}</strong> tasarruf öngörülmektedir.
+      </p>
+      <p style="font-size:13.5px;line-height:1.8;color:var(--t2)">
+        Şu an aktif olan Sprint 6 kapsamında uçtan uca testler, güvenlik denetimleri ve canlı ortam kurulumu devam etmektedir. Sistem; teknik gereksinimler, güvenlik standartları ve yasal uyumluluk açısından planlı şekilde ilerlemektedir.
+      </p>
+    </div>
+
+    <!-- KPI ÖZET -->
+    <div class="fr-section">
+      <div class="fr-section-title">📊 Proje KPI Özeti</div>
+      <div class="fr-section-sub">Kritik başarı göstergelerinin güncel değerleri</div>
+      <div class="fr-kpi-grid">
+        <div class="fr-kpi">
+          <div class="fr-kpi-val" style="color:var(--green)">${doneTasks}/${totalTasks}</div>
+          <div class="fr-kpi-lbl">Tamamlanan / Toplam Görev</div>
+        </div>
+        <div class="fr-kpi">
+          <div class="fr-kpi-val" style="color:var(--blue)">5/${TOPLAM_SPRINT}</div>
+          <div class="fr-kpi-lbl">Tamamlanan / Toplam Sprint</div>
+        </div>
+        <div class="fr-kpi">
+          <div class="fr-kpi-val" style="color:var(--cyan)">${PROJE_SURE}</div>
+          <div class="fr-kpi-lbl">Toplam Proje Süresi</div>
+        </div>
+        <div class="fr-kpi">
+          <div class="fr-kpi-val" style="color:var(--purple)">9</div>
+          <div class="fr-kpi-lbl">Proje Ekibi (Kişi)</div>
+        </div>
+        <div class="fr-kpi">
+          <div class="fr-kpi-val" style="color:var(--green)">₺${TOPLAM_BUTCE.toLocaleString('tr-TR')}</div>
+          <div class="fr-kpi-lbl">Toplam Proje Bütçesi</div>
+        </div>
+        <div class="fr-kpi">
+          <div class="fr-kpi-val" style="color:var(--orange)">₺${TOPLAM_MALIYET.toLocaleString('tr-TR')}</div>
+          <div class="fr-kpi-lbl">Şimdiye Kadar Harcanan</div>
+        </div>
+        <div class="fr-kpi">
+          <div class="fr-kpi-val" style="color:var(--green)">₺${NET_KAR.toLocaleString('tr-TR')}</div>
+          <div class="fr-kpi-lbl">Tahmini Bütçe Tasarrufu</div>
+        </div>
+        <div class="fr-kpi">
+          <div class="fr-kpi-val" style="color:var(--green)">%${Math.round((NET_KAR/TOPLAM_BUTCE)*100)}</div>
+          <div class="fr-kpi-lbl">Tahmini Tasarruf Oranı</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SPRINT ZEMESİ -->
+    <div class="fr-section">
+      <div class="fr-section-title">🗓️ Sprint Bazlı Süreç Zaman Çizelgesi</div>
+      <div class="fr-section-sub">Tamamlanan ve devam eden 6 sprint ile gerçekleştirilen aşamaların kronolojik özeti</div>
+      <div class="fr-timeline">${sprintTimelineHtml}</div>
+    </div>
+
+    <!-- EKİP KATKILARI -->
+    <div class="fr-section">
+      <div class="fr-section-title">👥 Ekip Katkı Özeti</div>
+      <div class="fr-section-sub">Her ekip üyesinin şimdiye kadar tamamlanan görevi, katkısı ve hakediş ödemesi</div>
+      <div class="fr-team-grid">${teamHtml}</div>
+    </div>
+
+    <!-- RİSK VE ENGEL ANALİZİ -->
+    <div class="fr-section">
+      <div class="fr-section-title">⚠️ Risk & Engel Analizi</div>
+      <div class="fr-section-sub">Proje boyunca karşılaşılan kritik durumlar ve uygulanan çözümler</div>
+      <div class="fr-risk-grid">
+        <div class="fr-risk-item" style="border-color:var(--orange)">
+          <div class="fr-risk-head" style="color:var(--orange)">🔴 Plaka Tanıma API Gecikmesi (Sprint 1)</div>
+          <div class="fr-risk-desc"><strong>Durum:</strong> Ocak ayı üçüncü haftasında plaka tanıma API tedarikçisi seçiminde gecikme yaşandı.<br><strong>Etki:</strong> 2 günlük çalışma kaybı. Orta şiddet.<br><strong>Çözüm:</strong> Acil teknik değerlendirme toplantısı düzenlendi ve alternatif tedarikçi 48 saat içinde netleştirildi. Takvim kayıpsız kapatıldı.</div>
+        </div>
+        <div class="fr-risk-item" style="border-color:var(--red)">
+          <div class="fr-risk-head" style="color:var(--red)">🔴 İyzico Production Onay Gecikmesi (Sprint 4)</div>
+          <div class="fr-risk-desc"><strong>Durum:</strong> Ödeme altyapısı için gereken İyzico production hesap onayı beklenen süreden 5 iş günü uzadı.<br><strong>Etki:</strong> Ödeme modülünün canlı testleri ertelendi. Yüksek şiddet.<br><strong>Çözüm:</strong> Bu süreç zarfında fatura PDF ve kampanya modülü öne çekilerek kayıp telafi edildi. Onay alındıktan sonra ödeme modülü bekletilmeden devreye alındı.</div>
+        </div>
+        <div class="fr-risk-item" style="border-color:var(--green)">
+          <div class="fr-risk-head" style="color:var(--green)">🟢 Bütçe Yönetimi — Kontrol Altında</div>
+          <div class="fr-risk-desc"><strong>Durum:</strong> Proje maliyetleri baştan beri düzenli olarak izlenmekte ve kontrol altında tutulmaktadır.<br><strong>Etki:</strong> Şimdiye kadar gerçekleşen harcama, toplam bütçenin %${Math.round((TOPLAM_MALIYET/TOPLAM_BUTCE)*100)}'inde kalmaktadır.<br><strong>Öngörü:</strong> Proje tamamlandığında tahminen ₺${NET_KAR.toLocaleString('tr-TR')} tasarruf elde edileceği öngörülmektedir.</div>
+        </div>
+        <div class="fr-risk-item" style="border-color:var(--blue)">
+          <div class="fr-risk-head" style="color:var(--blue)">🔵 Güvenlik & KVKK Uyumluluğu — Planlı Yönetildi</div>
+          <div class="fr-risk-desc"><strong>Durum:</strong> Veri güvenliği ve KVKK uyumluluk gereklilikleri Sprint 6'da kapsamlı şekilde ele alındı.<br><strong>Etki:</strong> Sertifikasyon süreçleri zaman planına uymakla birlikte yoğun kaynak gerektirdi.<br><strong>Sonuç:</strong> Penetrasyon testi raporlandı, SSL/TLS yapılandırıldı, KVKK denetimi geçildi. Sistem yasal uyumlu ve güvenli teslim edildi.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TEKNİK KAZANIMLAR -->
+    <div class="fr-section">
+      <div class="fr-section-title">⚙️ Teknik Kazanımlar & Teslim Edilen Sistemler</div>
+      <div class="fr-section-sub">Projenin teknik çıktıları ve mimarisinin özeti</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+        <div style="background:rgba(59,130,246,.05);border:1px solid rgba(59,130,246,.2);border-radius:var(--rs);padding:16px">
+          <div style="font-size:13px;font-weight:700;color:var(--blue);margin-bottom:8px">🔧 Backend & Altyapı</div>
+          <ul style="font-size:12px;color:var(--t2);padding-left:16px;line-height:2">
+            <li>Node.js + TypeScript RESTful API (156 endpoint)</li>
+            <li>PostgreSQL veritabanı + Prisma ORM</li>
+            <li>Redis önbellek katmanı (%40 yanıt hızı artışı)</li>
+            <li>JWT kimlik doğrulama + RBAC yetkilendirme</li>
+            <li>WebSocket ile gerçek zamanlı doluluk takibi</li>
+            <li>Docker + AWS production deployment</li>
+            <li>GitHub Actions CI/CD pipeline (%98 test coverage)</li>
+          </ul>
+        </div>
+        <div style="background:rgba(236,72,153,.05);border:1px solid rgba(236,72,153,.2);border-radius:var(--rs);padding:16px">
+          <div style="font-size:13px;font-weight:700;color:var(--pink);margin-bottom:8px">🎨 Frontend & Mobil</div>
+          <ul style="font-size:12px;color:var(--t2);padding-left:16px;line-height:2">
+            <li>React.js admin dashboard (12 modül)</li>
+            <li>React Native iOS & Android uygulaması</li>
+            <li>Google Maps API entegrasyonu</li>
+            <li>FCM push bildirim sistemi</li>
+            <li>QR kod ile giriş/çıkış sistemi</li>
+            <li>Apple Pay & Google Pay desteği</li>
+            <li>Figma tabanlı tasarım sistemi</li>
+          </ul>
+        </div>
+        <div style="background:rgba(16,185,129,.05);border:1px solid rgba(16,185,129,.2);border-radius:var(--rs);padding:16px">
+          <div style="font-size:13px;font-weight:700;color:var(--green);margin-bottom:8px">💳 Ödeme & Finans</div>
+          <ul style="font-size:12px;color:var(--t2);padding-left:16px;line-height:2">
+            <li>İyzico ödeme entegrasyonu (production)</li>
+            <li>Kredi kartı tokenizasyonu</li>
+            <li>Aylık abonelik planları & otomatik faturalama</li>
+            <li>PDF fatura & makbuz sistemi</li>
+            <li>KDV & vergi hesaplama motoru</li>
+            <li>İndirim & kampanya modülü</li>
+            <li>EFT & banka havalesi desteği</li>
+          </ul>
+        </div>
+        <div style="background:rgba(245,158,11,.05);border:1px solid rgba(245,158,11,.2);border-radius:var(--rs);padding:16px">
+          <div style="font-size:13px;font-weight:700;color:var(--orange);margin-bottom:8px">🛡️ Güvenlik & Uyumluluk</div>
+          <ul style="font-size:12px;color:var(--t2);padding-left:16px;line-height:2">
+            <li>SSL/TLS sertifika yapılandırması (A+ sınıfı)</li>
+            <li>Penetrasyon testi tamamlandı (0 kritik açık)</li>
+            <li>KVKK uyumluluk denetimi geçildi</li>
+            <li>Cypress E2E testler (%98 senaryo başarı)</li>
+            <li>Jest birim testleri (1.240 test case)</li>
+            <li>k6 yük testleri (10.000 eş zamanlı kullanıcı)</li>
+            <li>Bakım & SLA dokümantasyonu hazırlandı</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- ÖĞRENILEN DERSLER -->
+    <div class="fr-section">
+      <div class="fr-section-title">💡 Çıkarılan Dersler & Öneriler</div>
+      <div class="fr-section-sub">Proje sürecinde ekip içi gözlemler ve gelecek adımlar için değerlendirmeler</div>
+      <div class="fr-lesson-list">
+        <div class="fr-lesson">
+          <div class="fr-lesson-icon">🔌</div>
+          <div>
+            <div class="fr-lesson-head">Üçüncü Taraf API'larda Erken Doğrulama Kritik</div>
+            <div class="fr-lesson-desc">İyzico production onay sürecindeki gecikme, harici servislerle entegrasyon planlanırken onay süreçlerinin proje takvimine erkenden dahil edilmesi gerektiğini ortaya koydu. Gelecek projelerde harici API'ların onay ve entegrasyon süreleri için en az %30 takvim tamponu bırakılması önerilmektedir.</div>
+          </div>
+        </div>
+        <div class="fr-lesson">
+          <div class="fr-lesson-icon">🧪</div>
+          <div>
+            <div class="fr-lesson-head">Test Otomasyonuna Erken Yatırım Geri Dönüşü Yüksek</div>
+            <div class="fr-lesson-desc">Sprint 2'de kurulan Jest test altyapısı, ileri sprint'lerde regresyon hatalarını önemli ölçüde azalttı. Son sprintlerde ise Cypress ve k6 entegrasyonu sayesinde manuel test maliyeti minimize edildi. Test otomasyonuna yapılan erken yatırım, projenin toplam hata düzeltme maliyetini yaklaşık %35 düşürdü.</div>
+          </div>
+        </div>
+        <div class="fr-lesson">
+          <div class="fr-lesson-icon">🗂️</div>
+          <div>
+            <div class="fr-lesson-head">Agile Süreçler Beklenmedik Durumlarda Esneklik Sağladı</div>
+            <div class="fr-lesson-desc">Sprint tabanlı çalışma modeli, API gecikmesi ve güvenlik denetim yoğunluğu gibi beklenmedik durumlar karşısında iş sırasını esnek biçimde yeniden düzenleme imkânı tanıdı. Bu sayede bir sprintteki kayıp, diğer sprintteki çalışmaların öne çekilmesiyle telafi edilebildi.</div>
+          </div>
+        </div>
+        <div class="fr-lesson">
+          <div class="fr-lesson-icon">📡</div>
+          <div>
+            <div class="fr-lesson-head">Gerçek Zamanlı İletişim Planlama Süreci Kadar Değerli</div>
+            <div class="fr-lesson-desc">WebSocket modülü geliştirme sürecinde frontend ve backend ekipleri arasında günlük senkronizasyon toplantılarının entegrasyon hatalarını en aza indirdiği gözlemlendi. Ekipler arası iletişim sıklığının artırılması, özellikle modüller arası bağımlılık içeren noktalarda ciddi verimlilik artışı sağladı.</div>
+          </div>
+        </div>
+        <div class="fr-lesson">
+          <div class="fr-lesson-icon">💰</div>
+          <div>
+            <div class="fr-lesson-head">Dinamik Bütçe Takibi Tasarruf Fırsatları Yaratıyor</div>
+            <div class="fr-lesson-desc">Her sprint sonunda gerçek maliyet ile planlanan maliyet karşılaştırılması, bütçe sapmaları oluşmadan önce müdahale imkânı tanımaktadır. Şu ana kadar proje, bütçenin yalnızca %${Math.round((TOPLAM_MALIYET/TOPLAM_BUTCE)*100)}'ini harcamış olup proje sonunda ₺${NET_KAR.toLocaleString('tr-TR')} tasarruf elde edileceği öngörülmektedir.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SONUÇ & DURUM -->
+    <div class="fr-section">
+      <div class="fr-section-title">📋 Güncel Durum & Sonraki Adımlar</div>
+      <div class="fr-section-sub">Projenin mevcut ilerleme durumu ve planlanan tamamlanma adımları</div>
+      <p style="font-size:13.5px;line-height:1.8;color:var(--t1);margin-bottom:16px">
+        OtoPark Sistemi projesi aktif olarak sürmektedir. <strong>${totalTasks} görevden ${doneTasks}</strong> tanesi tamamlanmış olup Sprint 6 kapsamındaki son test, güvenlik ve canlı ortam görevleri devam etmektedir. 9 kişilik ekip yüksek performans ve koordinasyonla çalışmaya devam etmektedir.
+      </p>
+      <p style="font-size:13px;color:var(--t2);font-style:italic;margin-bottom:20px">
+        Bu rapor, proje yönetim sürecinin <strong>10 Haziran 2026</strong> itibarıyla hazırlanmış ara dönem durum belgesidir. Paydaşlar ve yönetim katı tarafından bilgi edinme amaçlı sunulmuştur. Projenin hedef tamamlanma tarihi <strong>30 Haziran 2026</strong>'dır.
+      </p>
+      <div class="fr-sign">
+        <div class="fr-sign-av" style="background:linear-gradient(135deg,#f59e0b,#8b5cf6)">NÇ</div>
+        <div>
+          <div class="fr-sign-name">Nisa Çelik</div>
+          <div class="fr-sign-title">Proje Yöneticisi (PM) — OtoPark Sistemi</div>
+          <div class="fr-sign-date">📅 10 Haziran 2026 &nbsp;|&nbsp; 📍 İstanbul, Türkiye</div>
+        </div>
+        <div class="fr-sign-stamp">
+          <div class="fr-sign-stamp-box" style="background:rgba(245,158,11,.1);color:var(--orange);border:1px solid rgba(245,158,11,.3)">⏳ PROJE<br>DEVAM EDİYOR</div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+init();
+</script>
+</body>
+</html>
