@@ -1,0 +1,41 @@
+@page "{id:int}"
+@model OtoparkSistemi.Pages.Parking.ExitModel
+@{ ViewData["Title"] = "Araç Çıkışı"; }
+
+<div class="page-header">
+    <h2>🚪 Araç Çıkışı</h2>
+    <a href="/Parking" class="btn btn-secondary">← Geri</a>
+</div>
+
+<div class="card" style="max-width:520px;">
+    <div class="card-header">Çıkış Özeti – @Model.Vm!.Plaka</div>
+    <div class="card-body">
+        <table class="table" style="margin-bottom:20px;">
+            <tr><td style="color:var(--text-muted);">Plaka</td><td><strong>@Model.Vm.Plaka</strong></td></tr>
+            <tr><td style="color:var(--text-muted);">Araç Tipi</td><td>@Model.Vm.AracTipi</td></tr>
+            <tr><td style="color:var(--text-muted);">Giriş</td><td>@Model.Vm.GirisTarihi.ToString("dd.MM.yyyy HH:mm")</td></tr>
+            <tr><td style="color:var(--text-muted);">Tahmini Çıkış</td><td>@DateTime.Now.ToString("dd.MM.yyyy HH:mm")</td></tr>
+            <tr><td style="color:var(--text-muted);">Geçen Süre</td><td>@Model.Vm.ToplamSureDakika dk</td></tr>
+            <tr>
+                <td style="color:var(--text-muted);">Ödenecek Ücret</td>
+                <td>
+                    @if (Model.Vm.AbonelikKullanildi)
+                    {
+                        <span class="badge badge-success">✓ Abonelik – Ücretsiz</span>
+                    }
+                    else
+                    {
+                        <strong style="font-size:1.3rem;color:var(--accent);">₺@Model.Vm.HesaplananUcret.ToString("N2")</strong>
+                    }
+                </td>
+            </tr>
+        </table>
+
+        <form method="post">
+            <input type="hidden" asp-for="KayitId" />
+            <button type="submit" class="btn btn-danger" style="width:100%;padding:14px;font-size:1rem;">
+                🚪 Çıkışı Onayla ve Öde
+            </button>
+        </form>
+    </div>
+</div>

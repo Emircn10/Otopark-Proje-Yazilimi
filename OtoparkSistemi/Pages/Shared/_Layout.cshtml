@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Otopark Giriş-Çıkış ve Abonelik Yönetim Sistemi" />
+    <title>@ViewData["Title"] – Otopark Sistemi</title>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+</head>
+<body>
+    <partial name="_Sidebar" />
+
+    <div class="main-content">
+        <div class="topbar">
+            <span class="topbar-title">@(ViewData["Title"] ?? "Dashboard")</span>
+            <div style="display:flex;align-items:center;gap:16px;">
+                <span class="topbar-time" id="live-clock"></span>
+                @if (User.Identity?.IsAuthenticated == true)
+                {
+                    <div style="display:flex;align-items:center;gap:10px;font-size:.85rem;">
+                        <span style="color:var(--text-muted);">
+                            👤 @User.Identity.Name
+                            @if (User.IsInRole("Admin"))
+                            { <span class="badge badge-info" style="margin-left:4px;">Admin</span> }
+                            else
+                            { <span class="badge badge-secondary" style="margin-left:4px;">Çalışan</span> }
+                        </span>
+                        <form method="post" action="/Account/Logout" style="margin:0;">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-secondary btn-sm">Çıkış</button>
+                        </form>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="page-body">
+            @if (TempData["Basari"] != null)
+            {
+                <div class="alert alert-success alert-auto-dismiss">
+                    <i class="fa fa-check-circle"></i> @TempData["Basari"]
+                </div>
+            }
+            @if (TempData["Hata"] != null)
+            {
+                <div class="alert alert-danger alert-auto-dismiss">
+                    <i class="fa fa-exclamation-circle"></i> @TempData["Hata"]
+                </div>
+            }
+            @RenderBody()
+        </div>
+    </div>
+
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

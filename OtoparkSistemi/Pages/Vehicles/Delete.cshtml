@@ -1,0 +1,30 @@
+@page "{id:int}"
+@model OtoparkSistemi.Pages.Vehicles.DeleteModel
+@{ ViewData["Title"] = "Araç Sil"; }
+
+<div class="page-header">
+    <h2>🗑️ Araç Sil</h2>
+    <a href="/Vehicles" class="btn btn-secondary">← Geri</a>
+</div>
+
+<div class="card" style="max-width:480px;">
+    <div class="card-header">Silme Onayı</div>
+    <div class="card-body">
+        <div class="alert alert-danger">
+            <i class="fa fa-exclamation-triangle"></i>
+            <strong>@Model.Arac!.Plaka</strong> plakalı aracı silmek istediğinize emin misiniz?
+        </div>
+        <table class="table" style="margin-bottom:20px;">
+            <tr><td>Plaka</td><td><strong>@Model.Arac.Plaka</strong></td></tr>
+            <tr><td>Tip</td><td>@Model.Arac.AracTipi</td></tr>
+            <tr><td>Sahibi</td><td>@(Model.Arac.SahibiAdi ?? "–")</td></tr>
+        </table>
+        <form method="post">
+            <input type="hidden" name="id" value="@Model.Arac.AracId" />
+            <div style="display:flex;gap:10px;">
+                <button type="submit" class="btn btn-danger">🗑️ Evet, Sil</button>
+                <a href="/Vehicles" class="btn btn-secondary">İptal</a>
+            </div>
+        </form>
+    </div>
+</div>

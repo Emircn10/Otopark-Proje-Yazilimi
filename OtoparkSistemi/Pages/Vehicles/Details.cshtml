@@ -1,0 +1,52 @@
+@page "{id:int}"
+@model OtoparkSistemi.Pages.Vehicles.DetailsModel
+@{ ViewData["Title"] = "Araç Detayı"; }
+
+<div class="page-header">
+    <h2>🔍 Araç Detayı – @Model.Arac!.Plaka</h2>
+    <div style="display:flex;gap:8px;">
+        <a href="/Vehicles/Edit/@Model.Arac.AracId" class="btn btn-warning">Düzenle</a>
+        <a href="/Vehicles" class="btn btn-secondary">← Geri</a>
+    </div>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 2fr;gap:20px;">
+    <div class="card">
+        <div class="card-header">Araç Bilgileri</div>
+        <div class="card-body">
+            <table class="table">
+                <tr><td style="color:var(--text-muted);">Plaka</td><td><strong>@Model.Arac.Plaka</strong></td></tr>
+                <tr><td style="color:var(--text-muted);">Tip</td><td><span class="badge badge-info">@Model.Arac.AracTipi</span></td></tr>
+                <tr><td style="color:var(--text-muted);">Sahibi</td><td>@(Model.Arac.SahibiAdi ?? "–")</td></tr>
+                <tr><td style="color:var(--text-muted);">Telefon</td><td>@(Model.Arac.SahibiTelefon ?? "–")</td></tr>
+                <tr><td style="color:var(--text-muted);">Kayıt</td><td>@Model.Arac.OlusturmaTarihi.ToString("dd.MM.yyyy")</td></tr>
+            </table>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">Geçmiş Park Kayıtları</div>
+        <div class="table-wrapper">
+            <table class="table">
+                <thead><tr><th>#</th><th>Giriş</th><th>Çıkış</th><th>Süre</th><th>Ücret</th><th>Durum</th></tr></thead>
+                <tbody>
+                    @foreach (var k in Model.Arac.GirisKayitlari.OrderByDescending(k => k.GirisTarihi).Take(15))
+                    {
+                        <tr>
+                            <td>@k.KayitId</td>
+                            <td>@k.GirisTarihi.ToString("dd.MM.yy HH:mm")</td>
+                            <td>@(k.CikisTarihi?.ToString("dd.MM.yy HH:mm") ?? "İçeride")</td>
+                            <td>@(k.ToplamSure.HasValue ? k.ToplamSure + " dk" : "–")</td>
+                            <td>@(k.OdenenUcret.HasValue ? "₺" + k.OdenenUcret.Value.ToString("N2") : "–")</td>
+                            <td><span class="badge @(k.OdemeDurumu=="Abonelik"?"badge-success":k.CikisTarihi==null?"badge-info":"badge-secondary")">@k.OdemeDurumu</span></td>
+                        </tr>
+                    }
+                    @if (!Model.Arac.GirisKayitlari.Any())
+                    {
+                        <tr><td colspan="6" style="text-align:center;color:var(--text-muted);">Kayıt yok.</td></tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

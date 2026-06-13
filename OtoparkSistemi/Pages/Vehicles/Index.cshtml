@@ -1,0 +1,53 @@
+@page
+@model OtoparkSistemi.Pages.Vehicles.IndexModel
+@{ ViewData["Title"] = "Araçlar"; }
+
+<div class="page-header">
+    <h2>🚗 Araçlar</h2>
+    <a href="/Vehicles/Create" class="btn btn-primary"><i class="fa fa-plus"></i> Yeni Araç</a>
+</div>
+
+<div class="card">
+    <div class="card-body" style="padding-bottom:0;">
+        <form method="get" class="search-bar">
+            <input type="text" name="arama" value="@Model.Arama" class="form-control" style="max-width:260px;" placeholder="Plaka veya isim ara..." />
+            <select name="tip" class="form-select" style="max-width:180px;">
+                <option value="">Tüm Tipler</option>
+                <option value="Otomobil" selected="@(Model.Tip=="Otomobil")">Otomobil</option>
+                <option value="Motosiklet" selected="@(Model.Tip=="Motosiklet")">Motosiklet</option>
+                <option value="Kamyonet" selected="@(Model.Tip=="Kamyonet")">Kamyonet</option>
+            </select>
+            <button type="submit" class="btn btn-secondary"><i class="fa fa-search"></i> Ara</button>
+            <a href="/Vehicles" class="btn btn-secondary">Temizle</a>
+        </form>
+    </div>
+    <div class="table-wrapper">
+        <table class="table">
+            <thead>
+                <tr><th>#</th><th>Plaka</th><th>Tip</th><th>Sahibi</th><th>Telefon</th><th>Kayıt Tarihi</th><th>İşlemler</th></tr>
+            </thead>
+            <tbody>
+                @foreach (var a in Model.Araclar)
+                {
+                    <tr>
+                        <td>@a.AracId</td>
+                        <td><strong>@a.Plaka</strong></td>
+                        <td><span class="badge badge-info">@a.AracTipi</span></td>
+                        <td>@(a.SahibiAdi ?? "–")</td>
+                        <td>@(a.SahibiTelefon ?? "–")</td>
+                        <td>@a.OlusturmaTarihi.ToString("dd.MM.yyyy")</td>
+                        <td style="white-space:nowrap;">
+                            <a href="/Vehicles/Details/@a.AracId" class="btn btn-secondary btn-sm">Detay</a>
+                            <a href="/Vehicles/Edit/@a.AracId" class="btn btn-warning btn-sm">Düzenle</a>
+                            <a href="/Vehicles/Delete/@a.AracId" class="btn btn-danger btn-sm">Sil</a>
+                        </td>
+                    </tr>
+                }
+                @if (!Model.Araclar.Any())
+                {
+                    <tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:32px;">Araç bulunamadı.</td></tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

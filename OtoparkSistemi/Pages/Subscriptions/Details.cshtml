@@ -1,0 +1,29 @@
+@page "{id:int}"
+@model OtoparkSistemi.Pages.Subscriptions.DetailsModel
+@{ ViewData["Title"] = "Abonelik Detayı"; }
+
+<div class="page-header">
+    <h2>📋 Abonelik Detayı #@Model.Abonelik!.AbonelikId</h2>
+    <div style="display:flex;gap:8px;">
+        <a href="/Subscriptions/Edit/@Model.Abonelik.AbonelikId" class="btn btn-warning">Düzenle/Yenile</a>
+        <a href="/Subscriptions" class="btn btn-secondary">← Geri</a>
+    </div>
+</div>
+
+<div class="card" style="max-width:500px;">
+    <div class="card-body">
+        <table class="table">
+            <tr><td style="color:var(--text-muted);">Araç Plaka</td><td><strong>@Model.Abonelik.Arac?.Plaka</strong></td></tr>
+            <tr><td style="color:var(--text-muted);">Araç Tipi</td><td>@Model.Abonelik.Arac?.AracTipi</td></tr>
+            <tr><td style="color:var(--text-muted);">Sahibi</td><td>@Model.Abonelik.Arac?.SahibiAdi</td></tr>
+            <tr><td style="color:var(--text-muted);">Abonelik Tipi</td><td><span class="badge badge-info">@Model.Abonelik.AbonelikTipi</span></td></tr>
+            <tr><td style="color:var(--text-muted);">Başlangıç</td><td>@Model.Abonelik.BaslangicTarihi.ToString("dd.MM.yyyy")</td></tr>
+            <tr><td style="color:var(--text-muted);">Bitiş</td><td>@Model.Abonelik.BitisTarihi.ToString("dd.MM.yyyy")</td></tr>
+            <tr><td style="color:var(--text-muted);">Ücret</td><td>₺@Model.Abonelik.Ucret.ToString("N2")</td></tr>
+            <tr>
+                <td style="color:var(--text-muted);">Durum</td>
+                <td>@if(Model.Abonelik.AktifMi){<span class="badge badge-success">Aktif</span>}else{<span class="badge badge-danger">Pasif</span>}</td>
+            </tr>
+        </table>
+    </div>
+</div>

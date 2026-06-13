@@ -1,0 +1,53 @@
+@page
+@model OtoparkSistemi.Pages.Parking.EntryModel
+@{ ViewData["Title"] = "Araç Girişi"; }
+
+<div class="page-header">
+    <h2>🚗 Araç Girişi</h2>
+    <div style="display:flex;gap:8px;">
+        <a href="/Parking/WalkIn" class="btn btn-warning">👤 Ziyaretçi Girişi</a>
+        <a href="/Parking" class="btn btn-secondary">← Geri</a>
+    </div>
+</div>
+
+<div class="card" style="max-width:500px;">
+    <div class="card-header">Kayıtlı Araç Girişi</div>
+    <div class="card-body">
+        @if (Model.Mesaj != null)
+        {
+            <div class="alert alert-@(Model.MesajTuru ?? "info")">
+                @Model.Mesaj
+                @if (Model.AbonelikVar)
+                {
+                    <br /><small>✅ Aktif abonelik bulundu – ücretsiz park!</small>
+                }
+            </div>
+        }
+
+        <form method="post">
+            <div class="form-group">
+                <label class="form-label">Araç Plakası *</label>
+                <input asp-for="Plaka" class="form-control plaka-input"
+                       list="plakaListesi"
+                       placeholder="34ABC123 yazın veya listeden seçin"
+                       style="font-size:1.1rem;letter-spacing:2px;text-align:center;"
+                       autocomplete="off" autofocus />
+                <datalist id="plakaListesi">
+                    @foreach (var p in Model.KayitliPlakalar)
+                    {
+                        <option value="@p" />
+                    }
+                </datalist>
+                <span asp-validation-for="Plaka" class="field-validation-error"></span>
+                <small style="color:var(--text-muted);margin-top:4px;display:block;">
+                    Kayıtlı olmayan araç için <a href="/Parking/WalkIn" style="color:var(--accent);">Ziyaretçi Girişi</a> kullanın.
+                </small>
+            </div>
+            <button type="submit" class="btn btn-primary" style="width:100%;padding:14px;font-size:1rem;">
+                🚦 Girişi Kaydet
+            </button>
+        </form>
+    </div>
+</div>
+
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

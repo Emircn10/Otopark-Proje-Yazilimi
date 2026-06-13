@@ -1,0 +1,71 @@
+@page
+@model OtoparkSistemi.Pages.Subscriptions.CreateModel
+@{ ViewData["Title"] = "Yeni Abonelik"; }
+
+<div class="page-header">
+    <h2>📋 Yeni Abonelik</h2>
+    <a href="/Subscriptions" class="btn btn-secondary">← Geri</a>
+</div>
+
+<div class="card" style="max-width:560px;">
+    <div class="card-header">Abonelik Bilgileri</div>
+    <div class="card-body">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+            <div class="form-group">
+                <label class="form-label">Araç (Plaka) *</label>
+                <select asp-for="Abonelik.AracId" class="form-select" asp-items="Model.AracListesi">
+                    <option value="">Araç seçiniz...</option>
+                </select>
+                <span asp-validation-for="Abonelik.AracId" class="field-validation-error"></span>
+            </div>
+            <div class="form-group">
+                <label class="form-label" asp-for="Abonelik.AbonelikTipi">Abonelik Tipi *</label>
+                <select asp-for="Abonelik.AbonelikTipi" class="form-select" id="abonelikTipi">
+                    <option value="">Seçiniz...</option>
+                    <option value="Aylık" data-ucret="500">Aylık – ₺500</option>
+                    <option value="3 Aylık" data-ucret="1200">3 Aylık – ₺1200</option>
+                    <option value="Yıllık" data-ucret="4000">Yıllık – ₺4000</option>
+                </select>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                <div class="form-group">
+                    <label class="form-label" asp-for="Abonelik.BaslangicTarihi">Başlangıç *</label>
+                    <input asp-for="Abonelik.BaslangicTarihi" type="date" class="form-control" id="baslangic" />
+                </div>
+                <div class="form-group">
+                    <label class="form-label" asp-for="Abonelik.BitisTarihi">Bitiş *</label>
+                    <input asp-for="Abonelik.BitisTarihi" type="date" class="form-control" id="bitis" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label" asp-for="Abonelik.Ucret">Ücret (₺) *</label>
+                <input asp-for="Abonelik.Ucret" type="number" step="0.01" class="form-control" id="ucret" />
+                <span asp-validation-for="Abonelik.Ucret" class="field-validation-error"></span>
+            </div>
+            <div style="display:flex;gap:10px;">
+                <button type="submit" class="btn btn-primary">💾 Kaydet</button>
+                <a href="/Subscriptions" class="btn btn-secondary">İptal</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.getElementById('abonelikTipi').addEventListener('change', function() {
+            const opt = this.options[this.selectedIndex];
+            const ucret = opt.dataset.ucret;
+            if (ucret) document.getElementById('ucret').value = ucret;
+            const baslangic = document.getElementById('baslangic').value || new Date().toISOString().split('T')[0];
+            document.getElementById('baslangic').value = baslangic;
+            const d = new Date(baslangic);
+            if (this.value === 'Aylık') d.setMonth(d.getMonth() + 1);
+            else if (this.value === '3 Aylık') d.setMonth(d.getMonth() + 3);
+            else if (this.value === 'Yıllık') d.setFullYear(d.getFullYear() + 1);
+            document.getElementById('bitis').value = d.toISOString().split('T')[0];
+        });
+    </script>
+}

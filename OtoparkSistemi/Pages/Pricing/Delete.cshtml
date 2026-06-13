@@ -1,0 +1,20 @@
+@page "{id:int}"
+@model OtoparkSistemi.Pages.Pricing.DeleteModel
+@{ ViewData["Title"] = "Tarife Sil"; }
+<div class="page-header"><h2>🗑️ Tarife Sil</h2><a href="/Pricing" class="btn btn-secondary">← Geri</a></div>
+<div class="card" style="max-width:420px;">
+    <div class="card-body">
+        <div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i> Bu tarifeyi silmek istediğinize emin misiniz?</div>
+        <table class="table" style="margin-bottom:20px;">
+            <tr><td>Araç Tipi</td><td>@Model.Tarife!.AracTipi</td></tr>
+            <tr><td>İlk 1 Saat</td><td>₺@Model.Tarife.Ilk1SaatUcret.ToString("N2")</td></tr>
+        </table>
+        <form method="post">
+            <input type="hidden" name="id" value="@Model.Tarife.TarifeId" />
+            <div style="display:flex;gap:10px;">
+                <button type="submit" class="btn btn-danger">🗑️ Sil</button>
+                <a href="/Pricing" class="btn btn-secondary">İptal</a>
+            </div>
+        </form>
+    </div>
+</div>

@@ -1,0 +1,88 @@
+@page
+@model OtoparkSistemi.Pages.Parking.IndexModel
+@{ ViewData["Title"] = "Giriş-Çıkış İşlemleri"; }
+
+<div class="page-header">
+    <h2>🚦 Giriş-Çıkış İşlemleri</h2>
+    <a href="/Parking/Entry" class="btn btn-primary"><i class="fa fa-sign-in-alt"></i> Araç Girişi</a>
+</div>
+
+<div class="tabs">
+    <a class="tab-btn @(Model.Tab=="aktif"?"active":"")" href="/Parking?tab=aktif">🟢 Aktif Parklar (@Model.AktifParklar.Count)</a>
+    <a class="tab-btn @(Model.Tab!="aktif"?"active":"")" href="/Parking?tab=tum">📋 Tüm Kayıtlar</a>
+</div>
+
+@if (Model.Tab == "aktif")
+{
+    <div class="card">
+        <div class="table-wrapper">
+            <table class="table">
+                <thead><tr><th>#</th><th>Plaka</th><th>Tip</th><th>Giriş Saati</th><th>Süre</th><th>Abonelik</th><th>İşlem</th></tr></thead>
+                <tbody>
+                    @foreach (var k in Model.AktifParklar)
+                    {
+                        var sure = (int)(DateTime.Now - k.GirisTarihi).TotalMinutes;
+                        <tr>
+                            <td>@k.KayitId</td>
+                            <td>
+                                <strong>@k.Arac?.Plaka</strong>
+                                @if (k.ZiyaretciMi)
+                                {
+                                    <span class="badge badge-warning" style="font-size: 0.7em; padding: 2px 4px; margin-left: 4px;">Ziyaretçi</span>
+                                }
+                            </td>
+                            <td>@k.Arac?.AracTipi</td>
+                            <td>@k.GirisTarihi.ToString("HH:mm")</td>
+                            <td>@sure dk</td>
+                            <td>
+                                @if (k.AbonelikKullanildiMi)
+                                {
+                                    <span class="badge badge-success">✓ Var</span>
+                                }
+                                else
+                                {
+                                    <span class="badge badge-secondary">–</span>
+                                }
+                            </td>
+                            <td><a href="/Parking/Exit/@k.KayitId" class="btn btn-danger btn-sm">🚪 Çıkış</a></td>
+                        </tr>
+                    }
+                    @if (!Model.AktifParklar.Any())
+                    {
+                        <tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:32px;">Şu an otoparkta araç yok.</td></tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
+else
+{
+    <div class="card">
+        <div class="table-wrapper">
+            <table class="table">
+                <thead><tr><th>#</th><th>Plaka</th><th>Giriş</th><th>Çıkış</th><th>Süre</th><th>Ücret</th><th>Durum</th></tr></thead>
+                <tbody>
+                    @foreach (var k in Model.TumKayitlar)
+                    {
+                        <tr>
+                            <td>@k.KayitId</td>
+                            <td>
+                                <strong>@k.Arac?.Plaka</strong>
+                                @if (k.ZiyaretciMi)
+                                {
+                                    <span class="badge badge-warning" style="font-size: 0.7em; padding: 2px 4px; margin-left: 4px;">Ziyaretçi</span>
+                                }
+                            </td>
+                            <td>@k.GirisTarihi.ToString("dd.MM.yy HH:mm")</td>
+                            <td>@(k.CikisTarihi?.ToString("dd.MM.yy HH:mm") ?? "–")</td>
+                            <td>@(k.ToplamSure.HasValue ? k.ToplamSure + " dk" : "–")</td>
+                            <td>@(k.OdenenUcret.HasValue ? "₺" + k.OdenenUcret.Value.ToString("N2") : "–")</td>
+                            <td><span class="badge @(k.OdemeDurumu=="Abonelik"?"badge-success":k.CikisTarihi==null?"badge-info":"badge-secondary")">@k.OdemeDurumu</span></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}

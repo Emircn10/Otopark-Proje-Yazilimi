@@ -1,0 +1,57 @@
+@page
+@model OtoparkSistemi.Pages.Parking.WalkInModel
+@{ ViewData["Title"] = "Ziyaretçi Girişi"; }
+
+<div class="page-header">
+    <h2>👤 Ziyaretçi (Tek Seferlik) Giriş</h2>
+    <a href="/Parking" class="btn btn-secondary">← Geri</a>
+</div>
+
+<div class="card" style="max-width:500px;">
+    <div class="card-header" style="background:rgba(245,158,11,.1);border-bottom:1px solid rgba(245,158,11,.3);">
+        <span style="color:#f59e0b;">⚠️ Aboneliği olmayan veya sistemde kayıtsız araçlar için</span>
+    </div>
+    <div class="card-body">
+        @if (Model.Mesaj != null)
+        {
+            <div class="alert alert-@(Model.MesajTuru ?? "info")">@Model.Mesaj</div>
+        }
+
+        <form method="post">
+            <div class="form-group">
+                <label class="form-label">Araç Plakası *</label>
+                <input asp-for="Plaka" class="form-control"
+                       placeholder="34ABC123"
+                       style="font-size:1.1rem;letter-spacing:2px;text-align:center;"
+                       autocomplete="off" autofocus />
+                <span asp-validation-for="Plaka" class="field-validation-error"></span>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Araç Tipi *</label>
+                <input asp-for="AracTipi" class="form-control" list="aracTipiList"
+                       placeholder="Otomobil, Motosiklet..." autocomplete="off" />
+                <datalist id="aracTipiList">
+                    <option value="Otomobil" /><option value="Motosiklet" />
+                    <option value="Kamyonet" /><option value="Otobüs" /><option value="Kamyon" />
+                </datalist>
+                <span asp-validation-for="AracTipi" class="field-validation-error"></span>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Sürücü Adı (opsiyonel)</label>
+                <input asp-for="SahibiAdi" class="form-control" placeholder="Ad Soyad" />
+            </div>
+            <div class="form-group">
+                <label class="form-label">Telefon (opsiyonel)</label>
+                <input asp-for="SahibiTelefon" class="form-control" placeholder="05XX XXX XX XX" />
+            </div>
+            <div class="alert" style="background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.2);font-size:.85rem;color:var(--text-muted);">
+                ℹ️ Araç sistemde kayıtlı değilse otomatik olarak <strong>Ziyaretçi</strong> kaydı oluşturulur.
+            </div>
+            <button type="submit" class="btn btn-warning" style="width:100%;padding:14px;font-size:1rem;color:#fff;">
+                🚦 Ziyaretçi Girişini Kaydet
+            </button>
+        </form>
+    </div>
+</div>
+
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

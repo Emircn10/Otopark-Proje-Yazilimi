@@ -1,0 +1,90 @@
+@page
+@model OtoparkSistemi.Pages.IndexModel
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<div class="page-header">
+    <h2>📊 Dashboard</h2>
+    <a href="/Parking/Entry" class="btn btn-primary"><i class="fa fa-plus"></i> Araç Girişi</a>
+</div>
+
+<!-- Stat Cards -->
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-bottom:28px;">
+    <div class="stat-card">
+        <div class="stat-icon blue">🚗</div>
+        <div>
+            <div class="stat-label">Şu An Otoparkta</div>
+            <div class="stat-value">@Model.Vm.OtoparkdakiAracSayisi</div>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon green">💵</div>
+        <div>
+            <div class="stat-label">Bugünkü Gelir</div>
+            <div class="stat-value">₺@Model.Vm.BugunkuGelir.ToString("N2")</div>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon amber">📋</div>
+        <div>
+            <div class="stat-label">Aktif Abonelik</div>
+            <div class="stat-value">@Model.Vm.AktifAbonelikSayisi</div>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon navy">📈</div>
+        <div>
+            <div class="stat-label">Doluluk Oranı</div>
+            <div class="stat-value">%@Model.Vm.DolulukOrani.ToString("F0")</div>
+        </div>
+    </div>
+</div>
+
+<!-- Doluluk Bar -->
+<div class="card" style="margin-bottom:24px;">
+    <div class="card-body">
+        <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+            <span style="font-weight:600;font-size:.9rem;">Otopark Doluluk Durumu</span>
+            <span style="color:var(--text-muted);font-size:.85rem;">@Model.Vm.OtoparkdakiAracSayisi / @Model.Vm.ToplamKapasite araç</span>
+        </div>
+        <div class="progress-bar-outer">
+            <div class="progress-bar-inner" style="width:@Model.Vm.DolulukOrani.ToString("F0")%"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Son Kayıtlar -->
+<div class="card">
+    <div class="card-header">🕐 Son Giriş-Çıkış Kayıtları</div>
+    <div class="table-wrapper">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>#</th><th>Plaka</th><th>Araç Tipi</th><th>Giriş</th><th>Çıkış</th><th>Ücret</th><th>Durum</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var k in Model.Vm.SonKayitlar)
+                {
+                    <tr>
+                        <td>@k.KayitId</td>
+                        <td><strong>@k.Plaka</strong></td>
+                        <td>@k.AracTipi</td>
+                        <td>@k.GirisTarihi.ToString("dd.MM.yy HH:mm")</td>
+                        <td>@(k.CikisTarihi?.ToString("dd.MM.yy HH:mm") ?? "–")</td>
+                        <td>@(k.OdenenUcret.HasValue ? "₺" + k.OdenenUcret.Value.ToString("N2") : "–")</td>
+                        <td>
+                            @if (k.Aktif)
+                            { <span class="badge badge-info">🟢 İçeride</span> }
+                            else if (k.OdemeDurumu == "Abonelik")
+                            { <span class="badge badge-success">Abonelik</span> }
+                            else
+                            { <span class="badge badge-secondary">@k.OdemeDurumu</span> }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

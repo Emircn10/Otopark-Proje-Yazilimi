@@ -1,0 +1,49 @@
+@page
+@model OtoparkSistemi.Pages.Subscriptions.IndexModel
+@{ ViewData["Title"] = "Abonelikler"; }
+
+<div class="page-header">
+    <h2>📋 Abonelikler</h2>
+    <a href="/Subscriptions/Create" class="btn btn-primary">+ Yeni Abonelik</a>
+</div>
+
+<div class="tabs">
+    <a class="tab-btn @(Model.Filtre!="pasif"?"active":"")" href="/Subscriptions?filtre=aktif">✅ Aktif</a>
+    <a class="tab-btn @(Model.Filtre=="pasif"?"active":"")" href="/Subscriptions?filtre=pasif">⛔ Pasif</a>
+</div>
+
+<div class="card">
+    <div class="table-wrapper">
+        <table class="table">
+            <thead><tr><th>#</th><th>Plaka</th><th>Tip</th><th>Başlangıç</th><th>Bitiş</th><th>Ücret</th><th>Durum</th><th>İşlem</th></tr></thead>
+            <tbody>
+                @foreach (var a in Model.Abonelikler)
+                {
+                    var kalanGun = (a.BitisTarihi - DateTime.Now).Days;
+                    <tr>
+                        <td>@a.AbonelikId</td>
+                        <td><strong>@a.Arac?.Plaka</strong></td>
+                        <td><span class="badge badge-info">@a.AbonelikTipi</span></td>
+                        <td>@a.BaslangicTarihi.ToString("dd.MM.yyyy")</td>
+                        <td>@a.BitisTarihi.ToString("dd.MM.yyyy") @(kalanGun > 0 && a.AktifMi ? $"(+{kalanGun} gün)" : "")</td>
+                        <td>₺@a.Ucret.ToString("N2")</td>
+                        <td>
+                            @if (a.AktifMi)
+                            { <span class="badge badge-success">Aktif</span> }
+                            else
+                            { <span class="badge badge-danger">Pasif</span> }
+                        </td>
+                        <td>
+                            <a href="/Subscriptions/Details/@a.AbonelikId" class="btn btn-secondary btn-sm">Detay</a>
+                            <a href="/Subscriptions/Edit/@a.AbonelikId" class="btn btn-warning btn-sm">Düzenle</a>
+                        </td>
+                    </tr>
+                }
+                @if (!Model.Abonelikler.Any())
+                {
+                    <tr><td colspan="8" style="text-align:center;color:var(--text-muted);padding:32px;">Abonelik bulunamadı.</td></tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

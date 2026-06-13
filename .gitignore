@@ -1,0 +1,22 @@
+# .NET Build Outputs
+bin/
+obj/
+*.user
+
+# Visual Studio
+.vs/
+*.suo
+*.userosscache
+*.sln.docstates
+
+# NuGet
+*.nupkg
+packages/
+project.lock.json
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log

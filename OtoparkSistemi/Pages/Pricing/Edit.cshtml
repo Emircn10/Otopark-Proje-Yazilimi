@@ -1,0 +1,65 @@
+@page "{id:int}"
+@model OtoparkSistemi.Pages.Pricing.EditModel
+@{ ViewData["Title"] = "Tarife Düzenle"; }
+
+<div class="page-header">
+    <h2>💰 Tarife Düzenle</h2>
+    <a href="/Pricing" class="btn btn-secondary">← Geri</a>
+</div>
+
+<div class="card" style="max-width:500px;">
+    <div class="card-body">
+        <form method="post">
+            <input type="hidden" asp-for="Tarife.TarifeId" />
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+            <div class="form-group">
+                <label class="form-label" asp-for="Tarife.AracTipi">Araç Tipi *</label>
+                <input asp-for="Tarife.AracTipi" class="form-control" list="aracTipiList"
+                       placeholder="Otomobil, Otobüs, vb." autocomplete="off" />
+                <datalist id="aracTipiList">
+                    <option value="Otomobil" />
+                    <option value="Motosiklet" />
+                    <option value="Kamyonet" />
+                    <option value="Otobüs" />
+                    <option value="Minibüs" />
+                    <option value="Kamyon" />
+                </datalist>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                <div class="form-group">
+                    <label class="form-label" asp-for="Tarife.Ilk1SaatUcret">0-1 Saat Ücreti (₺) *</label>
+                    <input asp-for="Tarife.Ilk1SaatUcret" type="number" step="0.01" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label class="form-label" asp-for="Tarife.Saat1_3Ucret">1-3 Saat (₺/sa) *</label>
+                    <input asp-for="Tarife.Saat1_3Ucret" type="number" step="0.01" class="form-control" />
+                </div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                <div class="form-group">
+                    <label class="form-label" asp-for="Tarife.Saat3PlusSaatlik">3+ Saat (₺/sa) *</label>
+                    <input asp-for="Tarife.Saat3PlusSaatlik" type="number" step="0.01" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label class="form-label" asp-for="Tarife.GunlukMaksimum">Günlük Maks. (₺) *</label>
+                    <input asp-for="Tarife.GunlukMaksimum" type="number" step="0.01" class="form-control" />
+                </div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                <div class="form-group">
+                    <label class="form-label" asp-for="Tarife.GecerlilikBaslangic">Başlangıç *</label>
+                    <input asp-for="Tarife.GecerlilikBaslangic" type="date" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label class="form-label" asp-for="Tarife.GecerlilikBitis">Bitiş</label>
+                    <input asp-for="Tarife.GecerlilikBitis" type="date" class="form-control" />
+                </div>
+            </div>
+            <div style="display:flex;gap:10px;">
+                <button type="submit" class="btn btn-primary">💾 Güncelle</button>
+                <a href="/Pricing" class="btn btn-secondary">İptal</a>
+            </div>
+        </form>
+    </div>
+</div>
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

@@ -1,0 +1,42 @@
+@page
+@model OtoparkSistemi.Pages.Pricing.IndexModel
+@{ ViewData["Title"] = "Tarifeler"; }
+
+<div class="page-header">
+    <h2>💰 Tarifeler</h2>
+    <a href="/Pricing/Create" class="btn btn-primary">+ Yeni Tarife</a>
+</div>
+
+<div class="card">
+    <div class="table-wrapper">
+        <table class="table">
+            <thead><tr><th>#</th><th>Araç Tipi</th><th>0-1 Saat</th><th>1-3 Saat</th><th>3+ Saat</th><th>Günlük Maks.</th><th>Geçerlilik Başlangıç</th><th>Geçerlilik Bitiş</th><th>İşlem</th></tr></thead>
+            <tbody>
+                @foreach (var t in Model.Tarifeler)
+                {
+                    var gecerli = t.GecerlilikBaslangic <= DateTime.Now && (t.GecerlilikBitis == null || t.GecerlilikBitis >= DateTime.Now);
+                    <tr>
+                        <td>@t.TarifeId</td>
+                        <td><span class="badge badge-info">@t.AracTipi</span></td>
+                        <td>₺@t.Ilk1SaatUcret.ToString("N2")</td>
+                        <td>₺@t.Saat1_3Ucret.ToString("N2")/sa</td>
+                        <td>₺@t.Saat3PlusSaatlik.ToString("N2")/sa</td>
+                        <td>₺@t.GunlukMaksimum.ToString("N2")</td>
+                        <td>@t.GecerlilikBaslangic.ToString("dd.MM.yyyy")</td>
+                        <td>@(t.GecerlilikBitis?.ToString("dd.MM.yyyy") ?? "–")</td>
+                        <td>
+                            @if (gecerli) { <span class="badge badge-success">Geçerli</span> }
+                            else { <span class="badge badge-secondary">Geçersiz</span> }
+                            <a href="/Pricing/Edit/@t.TarifeId" class="btn btn-warning btn-sm">Düzenle</a>
+                            <a href="/Pricing/Delete/@t.TarifeId" class="btn btn-danger btn-sm">Sil</a>
+                        </td>
+                    </tr>
+                }
+                @if (!Model.Tarifeler.Any())
+                {
+                    <tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:32px;">Tarife bulunamadı.</td></tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

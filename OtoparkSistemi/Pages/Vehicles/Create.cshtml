@@ -1,0 +1,53 @@
+@page
+@model OtoparkSistemi.Pages.Vehicles.CreateModel
+@{ ViewData["Title"] = "Yeni Araç Ekle"; }
+
+<div class="page-header">
+    <h2>🚗 Yeni Araç Ekle</h2>
+    <a href="/Vehicles" class="btn btn-secondary">← Geri</a>
+</div>
+
+<div class="card" style="max-width:560px;">
+    <div class="card-header">Araç Bilgileri</div>
+    <div class="card-body">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger" style="display:@(ViewData.ModelState.IsValid?"none":"block")"></div>
+
+            <div class="form-group">
+                <label class="form-label" asp-for="Arac.Plaka">Plaka *</label>
+                <input asp-for="Arac.Plaka" class="form-control plaka-input" placeholder="34ABC123" id="plaka" />
+                <span asp-validation-for="Arac.Plaka" class="field-validation-error"></span>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" asp-for="Arac.AracTipi">Araç Tipi *</label>
+                <select asp-for="Arac.AracTipi" class="form-select">
+                    <option value="">Seçiniz...</option>
+                    <option>Otomobil</option>
+                    <option>Motosiklet</option>
+                    <option>Kamyonet</option>
+                </select>
+                <span asp-validation-for="Arac.AracTipi" class="field-validation-error"></span>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" asp-for="Arac.SahibiAdi">Sahibi Adı</label>
+                <input asp-for="Arac.SahibiAdi" class="form-control" placeholder="Ad Soyad" />
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" asp-for="Arac.SahibiTelefon">Telefon</label>
+                <input asp-for="Arac.SahibiTelefon" class="form-control" placeholder="0555..." />
+            </div>
+
+            <div style="display:flex;gap:10px;margin-top:8px;">
+                <button type="submit" class="btn btn-primary">💾 Kaydet</button>
+                <a href="/Vehicles" class="btn btn-secondary">İptal</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

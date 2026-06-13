@@ -1,0 +1,54 @@
+@page "{id:int}"
+@model OtoparkSistemi.Pages.Subscriptions.EditModel
+@{ ViewData["Title"] = "Abonelik Düzenle/Yenile"; }
+
+<div class="page-header">
+    <h2>✏️ Abonelik Düzenle</h2>
+    <a href="/Subscriptions" class="btn btn-secondary">← Geri</a>
+</div>
+
+<div class="card" style="max-width:560px;">
+    <div class="card-body">
+        <form method="post">
+            <input type="hidden" asp-for="Abonelik.AbonelikId" />
+            <input type="hidden" asp-for="Abonelik.AracId" />
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+            <div class="form-group">
+                <label class="form-label">Araç</label>
+                <input type="text" class="form-control" value="@Model.Abonelik!.Arac?.Plaka – @Model.Abonelik.Arac?.SahibiAdi" disabled />
+            </div>
+            <div class="form-group">
+                <label class="form-label" asp-for="Abonelik.AbonelikTipi">Abonelik Tipi</label>
+                <select asp-for="Abonelik.AbonelikTipi" class="form-select">
+                    <option>Aylık</option><option>3 Aylık</option><option>Yıllık</option>
+                </select>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                <div class="form-group">
+                    <label class="form-label" asp-for="Abonelik.BaslangicTarihi">Başlangıç</label>
+                    <input asp-for="Abonelik.BaslangicTarihi" type="date" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label class="form-label" asp-for="Abonelik.BitisTarihi">Bitiş</label>
+                    <input asp-for="Abonelik.BitisTarihi" type="date" class="form-control" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label" asp-for="Abonelik.Ucret">Ücret (₺)</label>
+                <input asp-for="Abonelik.Ucret" type="number" step="0.01" class="form-control" />
+            </div>
+            <div class="form-group" style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--card-bg);border:1px solid var(--border);border-radius:8px;">
+                <input asp-for="Abonelik.AktifMi" type="checkbox" style="width:18px;height:18px;cursor:pointer;" id="aktifMiCheck" />
+                <label for="aktifMiCheck" class="form-label" style="margin:0;cursor:pointer;">
+                    Abonelik Aktif <small style="color:var(--text-muted);">(işareti kaldırarak pasif yapabilirsiniz)</small>
+                </label>
+            </div>
+            <div style="display:flex;gap:10px;">
+                <button type="submit" class="btn btn-primary">💾 Güncelle</button>
+                <a href="/Subscriptions" class="btn btn-secondary">İptal</a>
+            </div>
+        </form>
+    </div>
+</div>
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

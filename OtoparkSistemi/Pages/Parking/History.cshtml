@@ -1,0 +1,47 @@
+@page
+@model OtoparkSistemi.Pages.Parking.HistoryModel
+@{ ViewData["Title"] = "Kayıt Geçmişi"; }
+
+<div class="page-header">
+    <h2>📋 Park Geçmişi</h2>
+    <a href="/Parking" class="btn btn-secondary">← Geri</a>
+</div>
+
+<div class="card" style="margin-bottom:20px;">
+    <div class="card-body">
+        <form method="get" class="search-bar">
+            <input type="date" name="baslangic" value="@Model.Baslangic?.ToString("yyyy-MM-dd")" class="form-control" style="max-width:180px;" />
+            <span style="color:var(--text-muted);">–</span>
+            <input type="date" name="bitis" value="@Model.Bitis?.ToString("yyyy-MM-dd")" class="form-control" style="max-width:180px;" />
+            <button type="submit" class="btn btn-secondary">Filtrele</button>
+            <a href="/Parking/History" class="btn btn-secondary">Temizle</a>
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <div class="table-wrapper">
+        <table class="table">
+            <thead><tr><th>#</th><th>Plaka</th><th>Tip</th><th>Giriş</th><th>Çıkış</th><th>Süre</th><th>Ücret</th><th>Durum</th></tr></thead>
+            <tbody>
+                @foreach (var k in Model.Kayitlar)
+                {
+                    <tr>
+                        <td>@k.KayitId</td>
+                        <td><strong>@k.Arac?.Plaka</strong></td>
+                        <td>@k.Arac?.AracTipi</td>
+                        <td>@k.GirisTarihi.ToString("dd.MM.yy HH:mm")</td>
+                        <td>@(k.CikisTarihi?.ToString("dd.MM.yy HH:mm") ?? "–")</td>
+                        <td>@(k.ToplamSure.HasValue ? k.ToplamSure + " dk" : "–")</td>
+                        <td>@(k.OdenenUcret.HasValue ? "₺" + k.OdenenUcret.Value.ToString("N2") : "–")</td>
+                        <td><span class="badge @(k.OdemeDurumu=="Abonelik"?"badge-success":k.CikisTarihi==null?"badge-info":"badge-secondary")">@k.OdemeDurumu</span></td>
+                    </tr>
+                }
+                @if (!Model.Kayitlar.Any())
+                {
+                    <tr><td colspan="8" style="text-align:center;color:var(--text-muted);padding:32px;">Bu tarih aralığında kayıt bulunamadı.</td></tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
