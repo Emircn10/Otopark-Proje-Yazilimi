@@ -273,12 +273,6 @@ Abonelik sahibi    → Ücret = 0 (geçerli abonelik varsa)
 
 ---
 
-## 📄 Lisans
-
-Bu proje MIT lisansı altında lisanslanmıştır. Detaylar için [LICENSE](LICENSE) dosyasına bakın.
-
----
-
 <p align="center">
   <b>Emircn10</b> tarafından geliştirilmiştir &nbsp;•&nbsp; 
   <a href="https://github.com/Emircn10/OtoparkApp">GitHub'da Görüntüle</a>
