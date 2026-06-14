@@ -5,7 +5,7 @@
   <img src="https://img.shields.io/badge/ASP.NET_Core-Razor_Pages-512BD4?style=for-the-badge&logo=dotnet&logoColor=white" />
   <img src="https://img.shields.io/badge/SQL_Server-Express-CC2927?style=for-the-badge&logo=microsoftsqlserver&logoColor=white" />
   <img src="https://img.shields.io/badge/Entity_Framework_Core-9.0-68217A?style=for-the-badge" />
-  <img src="https://img.shields.io/badge/lisans-MIT-green?style=for-the-badge" />
+  
 </p>
 
 > **OtoparkApp**, otopark işletmelerinin araç giriş-çıkış takibini, abonelik yönetimini, tarife konfigürasyonunu ve personel yönetimini kolayca yapabilmesi için geliştirilmiş web tabanlı bir yönetim sistemidir.
